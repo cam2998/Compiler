@@ -10,11 +10,8 @@ struct SymTab *
 CreateSymTab(int size, char * scopeName, struct SymTab * parentTable) {
   struct SymTab * table=malloc(sizeof(struct SymTab));
   table->size=size;
-  if(scopeName==NULL){
-    table->scopeName=NULL;
-  }else{
-    table->scopeName=strdup(scopeName);
-  }
+  if(scopeName!=NULL)
+  table->scopeName=strdup(scopeName);
   table->parent=parentTable;
   table->contents=malloc(sizeof(struct SymEntry *)*size);
   return table;
@@ -35,7 +32,7 @@ HashName(int size, const char *name) {
 //done
 struct SymEntry *
 FindHashedName(struct SymTab *aTable, int hashValue, const char *name) {
-  struct SymEntry * entry=malloc(sizeof(struct SymEntry *));
+  struct SymEntry * entry=malloc(sizeof(struct SymEntry ));
   if(aTable->contents[hashValue]==NULL){
     return NULL;
   }
@@ -71,8 +68,8 @@ LookupName(struct SymTab *aTable, const char * name) {
 //done
 struct SymEntry *
 EnterName(struct SymTab *aTable, const char *name) {
-  struct SymEntry * newEntry=malloc(sizeof(struct SymEntry *));
-  struct SymEntry * result=malloc(sizeof(struct SymEntry *));
+  struct SymEntry * newEntry=malloc(sizeof(struct SymEntry ));
+  struct SymEntry * result=malloc(sizeof(struct SymEntry ));
   result = LookupName(aTable,name);
   if(result==NULL){
     if(name==NULL){
@@ -128,7 +125,8 @@ GetName(struct SymEntry *anEntry) {
 //done
 struct SymTab *
 GetTable(struct SymEntry *anEntry) {
-  if(anEntry==NULL||anEntry->table==NULL)return NULL;
+  if(anEntry==NULL) return NULL;
+  if(anEntry->table==NULL)return NULL;
   return anEntry->table;
 }
 
@@ -143,19 +141,20 @@ GetScopeName(struct SymTab *aTable) {
 //done
 char *
 GetScope(struct SymTab *aTable) {
-  char * scope = " ";
-  char * result=" ";
-  if(aTable==NULL) return NULL;
-  if(GetScopeName(aTable)==NULL)return NULL;
-  scope=strdup(GetScopeName(aTable));
+  char * scope=strdup(GetScopeName(aTable));
   if(scope==NULL)return NULL;
-  while(aTable->parent!=NULL){
-    aTable=aTable->parent;
-    result=malloc(sizeof(scope)+strlen(GetScopeName(aTable))+1);
+  aTable=aTable->parent;
+  while(aTable!=NULL){
+    //printf("%s\n",aTable->scopeName );
+    char * result=malloc(strlen(scope)+strlen(GetScopeName(aTable))+5);
+
     strcpy(result,GetScopeName(aTable));
-    strcat(result," ");
+    strcat(result,">");
     strcat(result,scope);
+
     scope=strdup(result);
+    aTable=aTable->parent;
+    free(result);
   }
   return scope;
 }
@@ -169,10 +168,9 @@ GetParentTable(struct SymTab *aTable) {
 //done
 struct SymTab *
 DestroySymTab(struct SymTab *aTable) {
-  struct SymTab * table;
+  struct SymTab * table=malloc(sizeof(struct SymTab));
   if(aTable==NULL)return NULL;
   if(aTable->parent!=NULL){
-    table=malloc(sizeof(struct SymTab));
     table=aTable->parent;
   }else{
     table=NULL;
@@ -202,25 +200,9 @@ DoForEntries(struct SymTab *aTable, bool includeParentTable,void (*entryFunc)(st
       }
 
     //printf("%i\n",i );
-
-      if(includeParentTable){
-      aTable=aTable->parent;
-        if(aTable==NULL)return;
-    }else {return;}
     }
-      return;
+    if(includeParentTable) aTable=aTable->parent; else return;
   }
-}
-//done
-void *
-freeEntry(struct SymEntry * current , int cnt , void * args){
-  //printf("Freeing entry \n");
-  if(current->table!=NULL)free(current->table);
-  if(current->name!=NULL)free(current->name);
-  if(&current->attrKind!=NULL)free(&current->attrKind);
-  if(current->attributes!=NULL)free(current->attributes);
-  if(current->next!=NULL)free(current->next);
-  free(current);
 }
 
 //done
