@@ -1,3 +1,14 @@
+/* Author: Cameron Trim
+  Created: 9/15/17
+  Resources: https://www.tutorialspoint.com/cprogramming/c_pointers.htm
+  https://www.tutorialspoint.com/c_standard_library/c_function_free.htm
+  https://www.tutorialspoint.com/c_standard_library/c_function_malloc.htm
+  http://courses.cs.vt.edu/cs2505/spring2014/Notes/T27_CstructTypes.pdf
+  https://stackoverflow.com/questions/8465006/how-do-i-concatenate-two-strings-in-c
+  https://stackoverflow.com/questions/9410/how-do-you-pass-a-function-as-a-parameter-in-c
+*/
+
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -59,8 +70,11 @@ struct SymEntry *
 LookupName(struct SymTab *aTable, const char * name) {
   if(aTable==NULL||name==NULL)return NULL;
   struct SymEntry * entry=FindHashedName(aTable,HashName(aTable->size,name),name);
-  if(entry==NULL){
-    return NULL;
+  if(entry==NULL&&aTable->parent!=NULL){
+  LookupName(aTable->parent,name);
+  }else if(entry==NULL){
+      return NULL;
+    //printf("Looking up parent table too\n");
   }
   return entry;
 }
@@ -94,7 +108,7 @@ GetAttrKind(struct SymEntry *anEntry) {
 //done
 void
 SetAttr(struct SymEntry *anEntry, int kind, void *attributes) {
-  if(kind!=NULL){
+  if(kind!=-1){
     anEntry->attrKind = kind;
   }else{
     anEntry->attrKind=-1;
@@ -145,13 +159,10 @@ GetScope(struct SymTab *aTable) {
   if(scope==NULL)return NULL;
   aTable=aTable->parent;
   while(aTable!=NULL){
-    //printf("%s\n",aTable->scopeName );
     char * result=malloc(strlen(scope)+strlen(GetScopeName(aTable))+5);
-
     strcpy(result,GetScopeName(aTable));
     strcat(result,">");
     strcat(result,scope);
-
     scope=strdup(result);
     aTable=aTable->parent;
     free(result);

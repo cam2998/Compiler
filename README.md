@@ -1,54 +1,40 @@
 # CS 442 - Compiler Construction
-## SymTab Assignment Respository
+## IOMngr Repository
 
-This repository initially contains the SymTab Project files: 
+This repository contains files to be added to your main project repository to include the IOMngr capabilities. The repository contains
 
-- SymTabDriver.c 
-    - The main test driver for the assignment. This driver reads lines from an input file. Each line contains one of the following commands.
-        - createtable table_size table_name
-        - insert name value
-        - transfertable existing_table_name new_table_size new_table_name
-        - displaytable table_name
-        - destroytable table_name
-    		
-- SymTab.h 
-    - The include file defining the required structures and functions for the implementation. 
-- SymData-N.in 
-    - Files of test data using of the above commands. 
-- SymData-N.out
-    - Expected output for the sample input.
-- Makefile 
-    - The Makefile containing the dependency rules as well as "clean", "symtest" and "symgrind" targets.
+- IOMngrDriver.c
+    - This is the test driver for the assignment. This driver opens the source and listing files and repeatedly requests the next character from the source file. When specific types of characters are seen it posts messages indicating the type of character. 
+
+- IOMngr.h
+    - The include file defining the functions implemented by the IOMngr. 
+
+- IOMngr.c
+	- A stub for the implementation file. 
+	
+- IOMngrSource
+    - A file containing an excerpt of a C source file for testing.
+
+- IOMngrListing1-out, IOMngrListing2-out
+    - The listing files produced from the given source file for the two modes of operation. 
+
+- Makefile
+    - An extended Makefile containing the rules required for building and testing the project. 
 
 ## The Assignment
 
-Create the SymTab.c file and implement the functions defined in SymTab.h. The implementation will use a hash table structure containing singly linked lists of names with equal hash values along with their attribute structures. 
+Complete the IOMngr.c file by implementing the functions defined in SymTab.h. The implementation will need to buffer source lines and also buffer posted messages for printing at the appropriate time. Two test targets are provided in the makefile. The first ("make iotest1") tests the form where both source and listing filenames are provided. The second ("make iotest2") tests the form where only a source filename is provided. 
 
-![SymTab Diagram](SymTab.png)
+## What to Do
 
-Since ``struct SymTab`` includes a parent pointer it is possible to create a chain of tables to support nested scopes. 
-
-Creating a table involves allocating space for the ``struct SymTab`` and then space for the ``contents`` array of pointers to the head nodes of the linked lists. There is no need for sentinel nodes. Each index in the contents array is either NULL indicating no list for the hash value or a pointer to a node on the list. New nodes are most easily added to the beginning of the list.
-
-Names entered in a table can have associated attribute data. The Symbol Table knows nothing about the structure of associated attribute data. Consequently, it does not know how to free this data. The ``DestroySymTab`` function only frees the memory allocated by this module. The user must ensure that all user allocated memory forming the associated attribute data is separately freed.  
-
-The DoForEntries() function provides a mechanism for iterating through all entries in a table, and optionally its parent table as well, applying a supplied function to each entry. This can be used to free attribute allocated memory. It can also be used for other purposes such as displaying all of the entries in a table.
-
-The ``attrKind`` fields allows the user to distinguish between several possible kinds of attribute data if necessary. It's interpretation is completely up to the user.  The SymTabDriver ignores the attribute kind and gives an example of how to free attribute memory before destroying a table.
-
-The project can be tested with "make symtest". 
-
-You may want to use several functions from string.h such as strlen(), strdup(), strcmp(). 
-
-## What To Do
-
-- In GitLab, fork this project to make a copy under your GitLab account, it will still be called "Project"
-- Clone _your_ copy of the project to your development machine. 
-- Implement SymTab.c and test. 
+- DO NOT FORK this repository on Gitlab, instead
+- On your development machine, in a location different than your assignment repository, clone this project. Your original Project repository will continue to accumulate all files for the project. 
+- Copy the files from this repository to your Project repository. The new Makefile will replace the existing copy.
+- Discard the clone of this repository.
+- Complete the IOMngr.c file by implementing the required functionality.
 - When complete, 
-    - ``make clean`` to remove object files and executables
-    - ``git add .`` to add your changes
-    - ``git commit -m "commit message"``
-    - ``git push -u origin master``
-    - add me as a "reporter" member of your project repository
+    - "make clean" to remove object files and executables
+    - use git to add and commit your changes to your local repository
+    - use git to push the project back up to your GitLab account
+    - I should already be a member of your project repository
     - create an issue on your project repository, listing me as assignee, with a title of "Submit for grading"

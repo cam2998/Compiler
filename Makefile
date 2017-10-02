@@ -18,9 +18,9 @@ CFLAGS = -g  -std=gnu11
 
 #==========================
 # Symbol Table Project
-SymTab.o: 			SymTab.c SymTab.h
+SymTab.o: SymTab.c SymTab.h
 SymTabDriver.o: SymTabDriver.c SymTab.h
-SymTabDriver: 	SymTabDriver.o SymTab.o
+SymTabDriver: SymTabDriver.o SymTab.o
 
 symtest: SymTabDriver
 		make -s symtest-0
@@ -64,6 +64,24 @@ symgrind: SymTabDriver
 	valgrind --leak-check=full SymTabDriver SymData.txt
 
 
+#===========================
+# IOMngr Project
+IOMngr.o: IOMngr.c IOMngr.h
+IOMngrDriver.o: IOMngrDriver.c IOMngr.h
+IOMngrDriver: IOMngrDriver.o IOMngr.o
+
+iotest:	IOMngrDriver
+		make -s iotest1
+		make -s iotest2
+
+iotest1: IOMngrDriver
+	./IOMngrDriver IOMngrSource IOMngrListing
+
+iotest2: IOMngrDriver
+	./IOMngrDriver IOMngrSource
+
+
+
 # Other
 clean:
-	rm -rf *.o SymTabDriver
+	rm -f *.o SymTabDriver IOMngrDriver 
