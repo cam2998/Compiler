@@ -1,4 +1,10 @@
-
+/* Author: Cameron Trim
+  Created: 9/26/17
+  Resources: https://stackoverflow.com/questions/308695/how-do-i-concatenate-const-literal-strings-in-c
+  https://www.tutorialspoint.com/c_standard_library/c_function_fprintf.htm
+  https://www.cprogramming.com/tutorial/cfileio.html
+  https://stackoverflow.com/questions/10279718/append-char-to-string-in-c
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
