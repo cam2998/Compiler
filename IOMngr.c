@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,16 +18,21 @@ char * indicatorLine;
 char * messages[MAX_MESSAGES];
 int messageCnt;
 
+int lastPos;
+
 //done
 bool
 OpenFiles(const char * aSourceName,const char * aListingName){
   sourceFile = fopen(aSourceName,"r");
   listingFile = fopen(aListingName,"w");
+  if(sourceFile==NULL) return false;
   nextPos=0;
   curLine=1;
-  if(sourceFile==NULL) return false;
+  lastPos=0;
   fgets(buffer,MAXLINE,sourceFile);
   bufLen=strlen(buffer);
+  indicatorLine=malloc(strlen(buffer));
+  messageCnt=0;
   if(listingFile==NULL)needDisplay=true;  else needDisplay=false;
   return true;
 }
@@ -34,6 +40,21 @@ OpenFiles(const char * aSourceName,const char * aListingName){
 //done
 void
 CloseFiles() {
+  char symbol = 'A';
+  int i=0;
+  if(needDisplay){
+    printf("       %s\n",indicatorLine);
+    while(messages[i]!=NULL && i<messageCnt){
+      printf("    -%c %s\n", symbol+i, messages[i]);
+      i++;
+    }
+  }else{
+    fprintf(listingFile,"       %s\n",indicatorLine);
+    while(messages[i]!=NULL && i<messageCnt){
+      fprintf(listingFile,"    -%c %s\n", symbol+i, messages[i]);
+      i++;
+    }
+  }
   if(sourceFile!=NULL) fclose(sourceFile);
   if(listingFile!=NULL) fclose(listingFile);
 }
@@ -41,30 +62,69 @@ CloseFiles() {
 char
 GetSourceChar() {
   char c;
-  if(nextPos==bufLen){
-    if(fgets(buffer, MAXLINE, sourceFile)==NULL)return EOF;
+  if(nextPos>bufLen){
+    if(fgets(buffer, MAXLINE, sourceFile)==NULL){
+      return EOF;
+    }
     bufLen=strlen(buffer);
-    nextPos=1;
+    nextPos=0;
+    lastPos=0;
     curLine+=1;
-  }else{
+    messageCnt=0;
+  }
+
     c=buffer[nextPos];
     nextPos+=1;
     return c;
-  }
 }
 
 void
 PostMessage(int aColumn, int aLength, const char * aMessage) {
-  if(true){ //needDisplay
-    printf("%i: %s      %i \n",aColumn ,buffer, aLength );
-    printf("%s\n",aMessage );
+  char symbol = 'A';
+  char * line = malloc(aLength);
+  int cmp=strcmp(aMessage, "EOF found");
+  if(aColumn<strlen(buffer)||cmp==0){
+    if(cmp!=0){
+      line[0]='A'+messageCnt;
+      for(int i=1; i<aLength;i++){
+        line[i]='-';
+      }
+      while(lastPos!=aColumn){
+        strcat(indicatorLine, " ");
+        lastPos++;
+      }
+      strcat(indicatorLine, line);
+    }
+    if(cmp==0){
+      indicatorLine[0]=symbol+messageCnt;
+    }
+    messages[messageCnt]=strdup(aMessage);
+    messageCnt++;
+    lastPos=aColumn+aLength;
   }else{
-    fprintf(listingFile,"%i: %s \n",aColumn ,buffer );
-    fprintf(listingFile, "%s\n",aMessage );
-    /*fprintf(listingFile, "\n%s",buffer );
-    fprintf(listingFile, "%i-",bufLen );
-    fprintf(listingFile, "%i-",nextPos);
-    fprintf(listingFile, "%c\n",buffer[nextPos]);*/
+    if(needDisplay){
+      printf("    %i: %s",GetCurrentLine(), buffer );
+      printf("      %s\n", indicatorLine );
+      int i=0;
+      while(messages[i]!=NULL && i<messageCnt){
+        printf("    -%c %s\n", symbol+i, messages[i]);
+        i++;
+      }
+    }else{
+      fprintf(listingFile,"    %i: %s",GetCurrentLine(), buffer );
+      fprintf(listingFile,"      %s\n", indicatorLine );
+      int i=0;
+      while(messages[i]!=NULL && i<messageCnt){
+        fprintf(listingFile,"    -%c %s\n", symbol+i, messages[i]);
+        i++;
+      }
+    }
+
+    free(indicatorLine);
+    indicatorLine=malloc(strlen(buffer)*sizeof(char));
+    messageCnt=0;
+    //printf("%i: %s      %i \n",aColumn ,buffer, aLength );
+    //printf("Message: %s\n",aMessage );
   }
 }
 
@@ -77,5 +137,5 @@ GetCurrentLine() {
 //check later
 int
 GetCurrentColumn() {
-  return nextPos-1;
+  return nextPos;
 }

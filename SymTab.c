@@ -71,7 +71,7 @@ LookupName(struct SymTab *aTable, const char * name) {
   if(aTable==NULL||name==NULL)return NULL;
   struct SymEntry * entry=FindHashedName(aTable,HashName(aTable->size,name),name);
   if(entry==NULL&&aTable->parent!=NULL){
-  LookupName(aTable->parent,name);
+    entry=LookupName(aTable->parent,name);
   }else if(entry==NULL){
       return NULL;
     //printf("Looking up parent table too\n");
@@ -85,16 +85,17 @@ EnterName(struct SymTab *aTable, const char *name) {
   struct SymEntry * newEntry=malloc(sizeof(struct SymEntry ));
   struct SymEntry * result=malloc(sizeof(struct SymEntry ));
   result = LookupName(aTable,name);
-  if(result==NULL){
-    if(name==NULL){
-      newEntry->name=NULL;
-    }else{
-      newEntry->name=strdup(name);
-    }
-    newEntry->next=aTable->contents[HashName(aTable->size,name)];
-    newEntry->table=aTable;
-    result=newEntry;
-    aTable->contents[HashName(aTable->size,name)]=result;
+  if(result==NULL||(strcmp(aTable->scopeName,result->table->scopeName)!=0)){
+      if(name==NULL){
+        newEntry->name=NULL;
+      }else{
+        newEntry->name=strdup(name);
+      }
+      newEntry->next=aTable->contents[HashName(aTable->size,name)];
+      newEntry->table=aTable;
+      result=newEntry;
+      aTable->contents[HashName(aTable->size,name)]=result;
+      return result;
   }
   return result;
 }
@@ -209,7 +210,6 @@ DoForEntries(struct SymTab *aTable, bool includeParentTable,void (*entryFunc)(st
         startCnt+=1;
         head=next;
       }
-
     //printf("%i\n",i );
     }
     if(includeParentTable) aTable=aTable->parent; else return;
