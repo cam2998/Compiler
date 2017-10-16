@@ -81,7 +81,20 @@ iotest2: IOMngrDriver
 	./IOMngrDriver IOMngrSource
 
 
+#===========================
+# Scanner Project
+ScannerDriver.o: ScannerDriver.c Scanner.h SymTab.h ScanTokens.h
+ScannerDriver: 	ScannerDriver.o Scanner.o SymTab.o IOMngr.o
+
+scantest: 	ScannerDriver
+	./ScannerDriver
+
+scanextest: 	ScanExample
+	./ScanExample
+
+
+#
 
 # Other
 clean:
-	rm -f *.o SymTabDriver IOMngrDriver 
+	rm -f *.o SymTabDriver IOMngrDriver ScannerDriver RecDescent Parse Y

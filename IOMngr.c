@@ -23,8 +23,17 @@ bool needDisplay;
 char * indicatorLine;
 char * messages[MAX_MESSAGES];
 int messageCnt;
-
+char symbol = 'A';
 int lastPos;
+
+struct postMessageInfo
+{
+    int columnPosition;
+    char messageChar;
+    char *message;
+};
+
+struct postMessageInfo messageArray[ MAX_MESSAGES ];
 
 //done
 bool
@@ -46,7 +55,6 @@ OpenFiles(const char * aSourceName,const char * aListingName){
 //done
 void
 CloseFiles() {
-  char symbol = 'A';
   int i=0;
   if(needDisplay){
     printf("       %s\n",indicatorLine);
@@ -68,45 +76,49 @@ CloseFiles() {
 char
 GetSourceChar() {
   char c;
-  if(nextPos>bufLen){
-    if(fgets(buffer, MAXLINE, sourceFile)==NULL){
-      return EOF;
-    }
-    bufLen=strlen(buffer);
-    nextPos=0;
-    lastPos=0;
-    curLine+=1;
-    messageCnt=0;
-  }
+ if(nextPos>bufLen){
+   if(fgets(buffer, MAXLINE, sourceFile)==NULL){
+     return EOF;
+   }
+   bufLen=strlen(buffer);
+   nextPos=0;
+   lastPos=0;
+   curLine+=1;
+   messageCnt=0;
+ }
 
-    c=buffer[nextPos];
-    nextPos+=1;
-    return c;
+   c=buffer[nextPos];
+   nextPos+=1;
+   return c;
 }
 
 void
 PostMessage(int aColumn, int aLength, const char * aMessage) {
-  char symbol = 'A';
+
   char * line = malloc(aLength);
   int cmp=strcmp(aMessage, "EOF found");
   if(aColumn<strlen(buffer)||cmp==0){
+    char sym= 'A'+messageCnt;
+    char cToStr[2];
+    cToStr[1]='\0';
+    cToStr[0]=sym;
     if(cmp!=0){
-      line[0]='A'+messageCnt;
+    while(lastPos!=aColumn&&lastPos<aColumn){
+      strcat(indicatorLine, " ");
+      lastPos++;
+    }
+      strcat(indicatorLine, cToStr);
       for(int i=1; i<aLength;i++){
-        line[i]='-';
+        strcat(indicatorLine, "-");
       }
-      while(lastPos!=aColumn){
-        strcat(indicatorLine, " ");
-        lastPos++;
-      }
-      strcat(indicatorLine, line);
     }
     if(cmp==0){
-      indicatorLine[0]=symbol+messageCnt;
+      strcat(indicatorLine,cToStr);
     }
     messages[messageCnt]=strdup(aMessage);
     messageCnt++;
     lastPos=aColumn+aLength;
+
   }else{
     if(needDisplay){
       printf("    %i: %s",GetCurrentLine(), buffer );
@@ -125,8 +137,7 @@ PostMessage(int aColumn, int aLength, const char * aMessage) {
         i++;
       }
     }
-
-    free(indicatorLine);
+    if(*indicatorLine) free(indicatorLine);
     indicatorLine=malloc(strlen(buffer)*sizeof(char));
     messageCnt=0;
     //printf("%i: %s      %i \n",aColumn ,buffer, aLength );

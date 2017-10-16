@@ -28,7 +28,7 @@
     -A IDENT found
     -B NUMBR found
     -C SEMI found
-       C
+       ABC
     -A EOF found
     -B EOF found
     -C EOF found

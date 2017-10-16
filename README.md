@@ -1,40 +1,43 @@
 # CS 442 - Compiler Construction
-## IOMngr Repository
+## Scanner Assignment Respository
 
-This repository contains files to be added to your main project repository to include the IOMngr capabilities. The repository contains
+This repository contains files to be added to your main assignment repository to include the Scanner portion of the project. The repository contains
 
-- IOMngrDriver.c
-    - This is the test driver for the assignment. This driver opens the source and listing files and repeatedly requests the next character from the source file. When specific types of characters are seen it posts messages indicating the type of character. 
-
-- IOMngr.h
-    - The include file defining the functions implemented by the IOMngr. 
-
-- IOMngr.c
-	- A stub for the implementation file. 
-	
-- IOMngrSource
-    - A file containing an excerpt of a C source file for testing.
-
-- IOMngrListing1-out, IOMngrListing2-out
-    - The listing files produced from the given source file for the two modes of operation. 
-
+- ScannerDriver.c
+ - This is the test driver for this portion of the project. The driver opens source and listing files and repeatedly requests the next token from the scanner. Depending on the token type different actions are taken. The "@INIT" token causes a symbol table to be created. Identifiers are stored in a symbol table. A running sum of integer literal tokens and float literal tokens is maintained. The "@DUMP" token displays the integer and float sums and the symbol table contents is sorted order.  
+- Scanner.l
+ - This is the starting point for the scanner definition. It contains the outline of the needed scanner rules. 
+- Scanner.h
+ - This exposes as an include file the functions and data provided by the lex/flex generated scanner. 
+- ScanTokens.h
+ - This is an include file containing defines for the various token types. 
 - Makefile
-    - An extended Makefile containing the rules required for building and testing the project. 
+ - The Makefile containing new rules and definitions for the scanner component. 
+
+- ScanEx0.l
+ - An example of a standalone scanner that recognizes simple token types. 
+- ScanEx1.l
+ - An example of a standalone scanner that on seeing an integer, evaluates and displays the factorial of the integer. 
+- ScanEx2.l
+ - An example of a standalone scanner that evaluates postfix arithmetic expressions. 
 
 ## The Assignment
 
-Complete the IOMngr.c file by implementing the functions defined in SymTab.h. The implementation will need to buffer source lines and also buffer posted messages for printing at the appropriate time. Two test targets are provided in the makefile. The first ("make iotest1") tests the form where both source and listing filenames are provided. The second ("make iotest2") tests the form where only a source filename is provided. 
-
-## What to Do
+- Part 1
+ - Create a standalone scanner (call the file ScanExample.l) that recognizes decimal integer literals and hexadecimal integer literals (e.g. 0xA1F is decimal 2591). Decimal integer literals are echoed to the output unchanged followed by a newline. Hexadecimal integer literals are converted to decimal and echoed to the output followed by a newline. All other input should be discarded. 
+- Part 2
+ - Scanner.l contains rules for the @INIT, @DUMP and Identifier tokens. Extend these rules to incorporate comments (both "/* ... */" comments, which may be nested, and through to the end of line comments "// ...."). Include the code necessary to only return tokens when not inside a comment.   
+ - Also include rules for integers, floats and at least one symbol. You will need to add defines for these token types to ScanTokens.h. Integer and float literals should allow an immediately preceding "-" to negate values. You may use the ``atoi()`` and ``atof()`` functions to convert the token text to numeric values. Both functions are able to handle negative values. 
+ - ScannerDriver.c contains most of the required code. The cases for @INIT and @DUMP are supplied. @INIT creates a symbol table and DUMP displays the contents of the table. You need to supply code for the IDENT_TOK case to add the token text to the symbol table with an appropriate attributes structure. Add cases for integer and float literals. These cases should update the accumulated sum of integer and float literals. The @DUMP case displays the running sum of integer and float literals and the symbol table contents. 
+ 
+## What To Do
 
 - DO NOT FORK this repository on Gitlab, instead
-- On your development machine, in a location different than your assignment repository, clone this project. Your original Project repository will continue to accumulate all files for the project. 
-- Copy the files from this repository to your Project repository. The new Makefile will replace the existing copy.
+- On your development machine, in a location different than your assignment repository, clone this project. Your assignment repository will continue to accumulate all files for the project. 
+- Copy the files from this repository to your assignment repository.
 - Discard the clone of this repository.
-- Complete the IOMngr.c file by implementing the required functionality.
-- When complete, 
-    - "make clean" to remove object files and executables
-    - use git to add and commit your changes to your local repository
-    - use git to push the project back up to your GitLab account
-    - I should already be a member of your project repository
-    - create an issue on your project repository, listing me as assignee, with a title of "Submit for grading"
+- Implement the required capabilities. 
+- When complete, "make clean" to remove object files and executables, use git to add and commit your changes and push the project back up to your repository.
+- Finaly, create an issue on your repository, with me as the reporter assignee, indicating that it is ready for grading. 
+
+
