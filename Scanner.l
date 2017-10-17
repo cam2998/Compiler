@@ -7,7 +7,6 @@ Digit   [0-9]
 
 #define YY_INPUT(buf,result,max_size) \
 	{ int c = GetSourceChar(); \
-			printf("<%c>\n",c);\
 		result = (c == EOF) ? YY_NULL : (buf[0] = c, 1); \
 	}
 
@@ -33,7 +32,7 @@ int nLevel=0;
 -?(({Digit}+)\.{Digit}+)				{if (!IN_COMMENT) RETURN(FLOAT_TOK);}
 
 \/\*														{nLevel++; IN_COMMENT=true;}
-\*\/														{nLevel--; if(nLevel==0)IN_COMMENT=false;}
+\*\/														{nLevel--; if(nLevel==0){IN_COMMENT=false;}}
 \/\/														{IN_COMMENT=true;}
 [\n]                            {IN_COMMENT=false; }
 [ \t]                           { }

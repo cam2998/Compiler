@@ -26,15 +26,6 @@ int messageCnt;
 char symbol = 'A';
 int lastPos;
 
-struct postMessageInfo
-{
-    int columnPosition;
-    char messageChar;
-    char *message;
-};
-
-struct postMessageInfo messageArray[ MAX_MESSAGES ];
-
 //done
 bool
 OpenFiles(const char * aSourceName,const char * aListingName){
@@ -42,11 +33,9 @@ OpenFiles(const char * aSourceName,const char * aListingName){
   listingFile = fopen(aListingName,"w");
   if(sourceFile==NULL) return false;
   nextPos=0;
-  curLine=1;
+  curLine=0;
   lastPos=0;
-  fgets(buffer,MAXLINE,sourceFile);
-  bufLen=strlen(buffer);
-  indicatorLine=malloc(strlen(buffer));
+  bufLen=0;
   messageCnt=0;
   if(listingFile==NULL)needDisplay=true;  else needDisplay=false;
   return true;
@@ -69,6 +58,7 @@ CloseFiles() {
       i++;
     }
   }
+  free(indicatorLine);
   if(sourceFile!=NULL) fclose(sourceFile);
   if(listingFile!=NULL) fclose(listingFile);
 }
@@ -76,11 +66,12 @@ CloseFiles() {
 char
 GetSourceChar() {
   char c;
- if(nextPos>bufLen){
+ if(nextPos>bufLen||!indicatorLine){
    if(fgets(buffer, MAXLINE, sourceFile)==NULL){
      return EOF;
    }
    bufLen=strlen(buffer);
+   indicatorLine=malloc(strlen(buffer));
    nextPos=0;
    lastPos=0;
    curLine+=1;
@@ -91,6 +82,8 @@ GetSourceChar() {
    nextPos+=1;
    return c;
 }
+
+
 
 void
 PostMessage(int aColumn, int aLength, const char * aMessage) {
@@ -138,10 +131,7 @@ PostMessage(int aColumn, int aLength, const char * aMessage) {
       }
     }
     if(*indicatorLine) free(indicatorLine);
-    indicatorLine=malloc(strlen(buffer)*sizeof(char));
     messageCnt=0;
-    //printf("%i: %s      %i \n",aColumn ,buffer, aLength );
-    //printf("Message: %s\n",aMessage );
   }
 }
 

@@ -21,8 +21,7 @@ struct SymTab *
 CreateSymTab(int size, char * scopeName, struct SymTab * parentTable) {
   struct SymTab * table=malloc(sizeof(struct SymTab));
   table->size=size;
-  if(scopeName!=NULL)
-  table->scopeName=strdup(scopeName);
+  if(scopeName!=NULL) table->scopeName=strdup(scopeName);
   table->parent=parentTable;
   table->contents=malloc(sizeof(struct SymEntry *)*size);
   return table;
