@@ -1,0 +1,4 @@
+                                          AB
+    -A CurToken: 4 -- Prog> StmtSeq> StmtSeq> StmtSeq> StmtSeq> StmtSeq> StmtSeq> StmtSeq -- Something went wrong in StmtSeq
+
+    -B Parse Unsuccessful

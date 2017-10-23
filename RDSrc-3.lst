@@ -1,0 +1,4 @@
+       ÀÉû      AB
+    -A CurToken: 16 -- Prog> StmtSeq> StmtSeq> StmtSeq> StmtSeq> StmtSeq> Stmt> Assign -- Token Match Failed
+
+    -B Parse Unsuccessful

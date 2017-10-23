@@ -1,0 +1,4 @@
+       Jâ        AB
+    -A CurToken: 8 -- Prog> StmtSeq> StmtSeq> StmtSeq> StmtSeq> Stmt> Assign> Expr> Term> Factor -- Something went wrong in Factor
+
+    -B Parse Unsuccessful

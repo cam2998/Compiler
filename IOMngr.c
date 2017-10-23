@@ -58,7 +58,6 @@ CloseFiles() {
       i++;
     }
   }
-  free(indicatorLine);
   if(sourceFile!=NULL) fclose(sourceFile);
   if(listingFile!=NULL) fclose(listingFile);
 }

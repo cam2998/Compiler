@@ -93,7 +93,30 @@ scanextest: 	ScanExample
 	./ScanExample
 
 
-#
+#===========================
+# Recursive Descent Project
+RDSupport.o:	RDSupport.c RDSupport.h
+RecDescent.o: 	RecDescent.c Scanner.h RDTokens.h
+RecDescent: 	RecDescent.o RDGrammar.o RDScanner.o RDSupport.o IOMngr.o
+
+rdtest: 	rdtest1 rdtest2 rdtest3 rdtest4 rdtest5
+
+rdtest1: 	RecDescent
+	./RecDescent RDSrc-1
+	./RecDescent -l RDSrc-1
+rdtest2: 	RecDescent
+	./RecDescent RDSrc-2
+	./RecDescent -l RDSrc-2
+rdtest3: 	RecDescent
+	./RecDescent RDSrc-3
+	./RecDescent -l RDSrc-3
+rdtest4: 	RecDescent
+	./RecDescent RDSrc-4
+	./RecDescent -l RDSrc-4
+rdtest5: 	RecDescent
+	./RecDescent RDSrc-5
+	./RecDescent -l RDSrc-5
+
 
 # Other
 clean:
