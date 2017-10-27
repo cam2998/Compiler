@@ -1,3 +1,8 @@
+/* Author: Cameron Trim
+  Created: 10/20/17
+  Resources:
+*/
+
 #include <stdbool.h>
 
 #include "IOMngr.h"

@@ -1,4 +1,9 @@
-       Jâ        AB
+1:  Second {
+2:    int x,y;
+3:    int z, w;
+4:    x := 5 * (y - 2);
+5:    z := +4 - 3;
+           A
     -A CurToken: 8 -- Prog> StmtSeq> StmtSeq> StmtSeq> StmtSeq> Stmt> Assign> Expr> Term> Factor -- Something went wrong in Factor
 
     -B Parse Unsuccessful

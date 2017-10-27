@@ -11,137 +11,121 @@
 
 #include "IOMngr.h"
 
-#define LISTINGMARGIN 6
+#define MAX_MESSAGES 26
 
 FILE *sourceFile, *listingFile;
-char buffer[MAXLINE];
+char buffer[ MAXLINE ], otherBuffer[ MAXLINE ];
 int bufLen, nextPos;
 int curLine;
-bool needDisplay;
-
-#define MAX_MESSAGES 26
+char * messages[ MAX_MESSAGES ];
 char * indicatorLine;
-char * messages[MAX_MESSAGES];
 int messageCnt;
-char symbol = 'A';
-int lastPos;
+char symbol='A';
 
-//done
+
+struct message{
+    int aColumn;
+    int aLength;
+    char symbol;
+    char *aMessage;
+};
+struct message messA[ MAX_MESSAGES ];
+void printOutput();
+
 bool
 OpenFiles(const char * aSourceName,const char * aListingName){
-  sourceFile = fopen(aSourceName,"r");
-  listingFile = fopen(aListingName,"w");
+  sourceFile=fopen(aSourceName,"r");
   if(sourceFile==NULL) return false;
-  nextPos=0;
-  curLine=0;
-  lastPos=0;
-  bufLen=0;
-  messageCnt=0;
-  if(listingFile==NULL)needDisplay=true;  else needDisplay=false;
+
+  if(aListingName==NULL){
+    listingFile=stdout;
+    return true;
+  }
+  listingFile=fopen(aListingName,"w");
+  if(listingFile==NULL) return false;
   return true;
 }
 
-//done
-void
-CloseFiles() {
-  int i=0;
-  if(needDisplay){
-    printf("       %s\n",indicatorLine);
-    while(messages[i]!=NULL && i<messageCnt){
-      printf("    -%c %s\n", symbol+i, messages[i]);
-      i++;
-    }
-  }else{
-    fprintf(listingFile,"       %s\n",indicatorLine);
-    while(messages[i]!=NULL && i<messageCnt){
-      fprintf(listingFile,"    -%c %s\n", symbol+i, messages[i]);
-      i++;
-    }
-  }
-  if(sourceFile!=NULL) fclose(sourceFile);
-  if(listingFile!=NULL) fclose(listingFile);
+// Closes the files and makes sure all posted messages have been displayed
+void CloseFiles(){
+    fclose( sourceFile );
+    printOutput();
+    if( listingFile !=stdout ) fclose( listingFile );
 }
 
-char
-GetSourceChar() {
-  char c;
- if(nextPos>bufLen||!indicatorLine){
-   if(fgets(buffer, MAXLINE, sourceFile)==NULL){
-     return EOF;
-   }
-   bufLen=strlen(buffer);
-   indicatorLine=malloc(strlen(buffer));
-   nextPos=0;
-   lastPos=0;
-   curLine+=1;
-   messageCnt=0;
- }
-
-   c=buffer[nextPos];
-   nextPos+=1;
-   return c;
+char GetSourceChar(){
+    if( !indicatorLine || *indicatorLine=='\0' ){
+        if( curLine ) printOutput();else curLine=0;
+        curLine++;
+        nextPos=-1;
+        indicatorLine=fgets( buffer, MAXLINE, sourceFile );
+        if( !indicatorLine ){
+            curLine=0;
+            nextPos=0;
+            buffer[0]='\0';
+            return EOF;
+        }
+    }
+    if( '\t'==*indicatorLine ) *indicatorLine=' ';
+    nextPos++;
+    return *indicatorLine++;
 }
 
+void printOutput()
+{
+    if( !listingFile || curLine>=0 ){
+        fprintf( listingFile, "%i:  %s", curLine, buffer );
+        int column=0;
+        int endingPos=0;
+        int pos=0;
+        int symPos=symbol-'A';
+        struct message *ptr=messA;
+        int currentPos=indicatorLine - buffer;
+        while( pos<symPos&&endingPos<currentPos){
+          while(endingPos<ptr->aColumn){
+            otherBuffer[endingPos]=' ';
+            endingPos++;
+          }
+          otherBuffer[ptr->aColumn]=ptr->symbol;
+          endingPos++;
+          for(int i=0;i<ptr->aLength-1; i++){
+            otherBuffer[endingPos]='-';
+            endingPos++;
+          }
+            ptr++;
+            pos++;
+        }
 
+        otherBuffer[ endingPos]='\0';
+        if( symbol!='A' ){
+            fprintf( listingFile, "    %s\n", otherBuffer );
+        }
 
-void
-PostMessage(int aColumn, int aLength, const char * aMessage) {
-
-  char * line = malloc(aLength);
-  int cmp=strcmp(aMessage, "EOF found");
-  if(aColumn<strlen(buffer)||cmp==0){
-    char sym= 'A'+messageCnt;
-    char cToStr[2];
-    cToStr[1]='\0';
-    cToStr[0]=sym;
-    if(cmp!=0){
-    while(lastPos!=aColumn&&lastPos<aColumn){
-      strcat(indicatorLine, " ");
-      lastPos++;
+        ptr=messA;
+        for( int i=0 ; i<symbol-'A'; i++){
+                fprintf( listingFile, "    -%c %s\n", 'A'+i, ptr->aMessage );
+                free( ptr -> aMessage );
+                ptr++;
+            }
     }
-      strcat(indicatorLine, cToStr);
-      for(int i=1; i<aLength;i++){
-        strcat(indicatorLine, "-");
-      }
-    }
-    if(cmp==0){
-      strcat(indicatorLine,cToStr);
-    }
-    messages[messageCnt]=strdup(aMessage);
-    messageCnt++;
-    lastPos=aColumn+aLength;
-
-  }else{
-    if(needDisplay){
-      printf("    %i: %s",GetCurrentLine(), buffer );
-      printf("      %s\n", indicatorLine );
-      int i=0;
-      while(messages[i]!=NULL && i<messageCnt){
-        printf("    -%c %s\n", symbol+i, messages[i]);
-        i++;
-      }
-    }else{
-      fprintf(listingFile,"    %i: %s",GetCurrentLine(), buffer );
-      fprintf(listingFile,"      %s\n", indicatorLine );
-      int i=0;
-      while(messages[i]!=NULL && i<messageCnt){
-        fprintf(listingFile,"    -%c %s\n", symbol+i, messages[i]);
-        i++;
-      }
-    }
-    if(*indicatorLine) free(indicatorLine);
-    messageCnt=0;
-  }
+    symbol='A';
 }
 
-//done
-int
-GetCurrentLine() {
-  return curLine;
+void PostMessage( int aColumn, int aLength, const char * aMessage ){
+    if( symbol<='A'+25 && aColumn<=MAXLINE ){
+        int i=symbol- 'A';
+        messA[i].aColumn=aColumn;
+        messA[i].aLength=aLength;
+        messA[i].symbol=symbol;
+        messA[i].aMessage=strdup( aMessage );
+        symbol++;
+    }
 }
 
-//check later
-int
-GetCurrentColumn() {
-  return nextPos;
+int GetCurrentLine(){
+    return curLine;
+}
+
+int GetCurrentColumn(){
+    return nextPos;
 }
