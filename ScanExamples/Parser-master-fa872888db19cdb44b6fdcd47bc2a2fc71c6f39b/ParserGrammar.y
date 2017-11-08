@@ -1,0 +1,40 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "IOMngr.h"
+
+extern int yylex();    /* The next token function. */
+extern char *yytext;   /* The matched token text.  */
+extern int yyleng;     /* The token text length.   */
+
+void yyerror(char *s);
+
+#define YYSTYPE long   /* 64 bit so can hold pointer and int */
+
+%}
+
+%token INT_TOK     1  CHR_TOK    2
+%token ASSIGN_TOK  3  SEMI_TOK   4  COMMA_TOK    5
+%token LPAREN_TOK  6  RPAREN_TOK 7
+%token LBRACE_TOK  8  RBRACE_TOK 9
+%token MINUS_TOK  10  PLUS_TOK  11  TIMES_TOK   12   DIV_TOK    13
+%token INTLIT_TOK 14  IDENT_TOK 15
+
+%%
+Prog    : IDENT_TOK LBRACE_TOK StmtSeq RBRACE_TOK                                         ;
+StmtSeq : Stmt SEMI_TOK StmtSeq                                                           ;
+StmtSeq :                                                                                 ;
+
+Assign  : LHS ASSIGN_TOK Expr               { printf("%s =\n",(char *)$1);              } ;
+
+%%
+
+void
+yyerror(char *s)
+{
+  char msg[256];
+  snprintf(msg,255,"err: \"%s\" yytext: \"%s\"\n",s,yytext);
+  PostMessage(GetCurrentColumn(),yyleng,msg);
+}

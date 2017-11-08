@@ -46,14 +46,15 @@ OpenFiles(const char * aSourceName,const char * aListingName){
   return true;
 }
 
-// Closes the files and makes sure all posted messages have been displayed
-void CloseFiles(){
+void
+CloseFiles(){
     fclose( sourceFile );
     printOutput();
     if( listingFile !=stdout ) fclose( listingFile );
 }
 
-char GetSourceChar(){
+char
+GetSourceChar(){
     if( !indicatorLine || *indicatorLine=='\0' ){
         if( curLine ) printOutput();else curLine=0;
         curLine++;
@@ -71,7 +72,8 @@ char GetSourceChar(){
     return *indicatorLine++;
 }
 
-void printOutput()
+void
+printOutput()
 {
     if( !listingFile || curLine>=0 ){
         fprintf( listingFile, "%i:  %s", curLine, buffer );
@@ -111,7 +113,8 @@ void printOutput()
     symbol='A';
 }
 
-void PostMessage( int aColumn, int aLength, const char * aMessage ){
+void
+PostMessage( int aColumn, int aLength, const char * aMessage ){
     if( symbol<='A'+25 && aColumn<=MAXLINE ){
         int i=symbol- 'A';
         messA[i].aColumn=aColumn;
@@ -122,10 +125,12 @@ void PostMessage( int aColumn, int aLength, const char * aMessage ){
     }
 }
 
-int GetCurrentLine(){
+int
+GetCurrentLine(){
     return curLine;
 }
 
-int GetCurrentColumn(){
+int
+GetCurrentColumn(){
     return nextPos;
 }
