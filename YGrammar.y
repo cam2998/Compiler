@@ -39,35 +39,37 @@
 %type <InstrSeq> PutF
 %type <ExprResult> GetF
 %type <Text> ChrLit
+%type <Text> StringLit
 %type <CondResult> Cond
 %type <BaseType> CondOp
 
 /* List of token grammar name and corresponding numbers */
 /* y.tab.h will be generated from these for use by scanner*/
-%token IDENT_TOK  	1
-%token DECL_TOK   	2
-%token IMPL_TOK   	3
-%token INT_TOK    	4
-%token CHR_TOK     	5
-%token CHRLIT_TOK   6
-%token INTLIT_TOK   7
-%token RB_TOK       8
-%token LB_TOK       9
-%token PLUS_TOK     10
-%token MINUS_TOK    11
-%token TIMES_TOK    12
-%token DIV_TOK      13
-%token PUT_TOK      14
-%token GET_TOK      15
-%token NOTEQ_TOK    16
-%token EQ_TOK       17
-%token GT_TOK       18
-%token LT_TOK       19
-%token GTOE_TOK     21
-%token LTOE_TOK     22
-%token IF_TOK       23
-%token WHILE_TOK    24
-%token ELSE_TOK     25
+%token IDENT_TOK  	 1
+%token DECL_TOK   	 2
+%token IMPL_TOK   	 3
+%token INT_TOK    	 4
+%token CHR_TOK     	 5
+%token CHRLIT_TOK    6
+%token INTLIT_TOK    7
+%token RB_TOK        8
+%token LB_TOK        9
+%token PLUS_TOK      10
+%token MINUS_TOK     11
+%token TIMES_TOK     12
+%token DIV_TOK       13
+%token PUT_TOK       14
+%token GET_TOK       15
+%token NOTEQ_TOK     16
+%token EQ_TOK        17
+%token GT_TOK        18
+%token LT_TOK        19
+%token GTOE_TOK      21
+%token LTOE_TOK      22
+%token IF_TOK        23
+%token WHILE_TOK     24
+%token ELSE_TOK      25
+%token STRINGLIT_TOK 26
 
 
 // can't go past 31 without conflicting with single char tokens
@@ -84,7 +86,7 @@ DeclImpls     :                                                          { };
 
 Decl          : DECL_TOK DeclList ':' Type ';'                           { ProcDecls($2,$4); };
 
-DeclList      : DeclItem ',' DeclList                              { $$ = AppendIdList($1,$3); };
+DeclList      : DeclItem ',' DeclList                                    { $$ = AppendIdList($1,$3); };
 DeclList      : DeclItem                                                 { $$ = $1; };
 
 DeclItem      : Id                                                       { $$ = ProcName($1,PrimType); };
@@ -123,8 +125,10 @@ CondOp        : LTOE_TOK                                                 { $$ = 
 
 PutF          : PUT_TOK '(' ChrLit  ')'                                  { $$ = PutFunc( $3 , ChrBaseType );};
 PutF          : PUT_TOK '(' Id  ')'                                      { $$ = PutFunc( $3, IntBaseType );};
+PutF          : PUT_TOK '(' StringLit  ')'                               { $$ = PutFunc( $3, StringBaseType );};
 
-ChrLit        : CHRLIT_TOK                                               {$$ = strdup(yytext);};
+StringLit     : STRINGLIT_TOK                                            { $$ = strdup(yytext); };
+ChrLit        : CHRLIT_TOK                                               { $$ = strdup(yytext); };
 
 AssignStmt    : Id '=' Expr                                              { $$ = genStoreWord( $1 , $3); };
 

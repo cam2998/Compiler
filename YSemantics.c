@@ -194,6 +194,17 @@ Finish() {
         head=head->next;
       }
     }
+    for(i=0;i<StringLiteralTable->size;i++){
+      struct SymEntry * head=StringLiteralTable->contents[i];
+      while(head){
+        struct StrAttr * headAttr = (struct StrAttr *) GetAttr(head);
+        int kind=GetAttrKind(head);
+        char * c = strdup(GetName(head));
+        char * l = strdup(headAttr->label);
+        AppendSeq(dataCode,GenInstr(l,".asciiz",c,NULL,NULL));
+        head=head->next;
+      }
+    }
 
   // combine and write
   struct InstrSeq * moduleCode = AppendSeq(textCode,dataCode);
@@ -484,6 +495,20 @@ PutFunc(char * k, enum BaseTypes type){
     code=GenInstr(NULL,"lw",TmpRegName(newReg),attribute->reference,NULL);
     AppendSeq(code,GenInstr(NULL,"li","$v0","1",NULL));
     AppendSeq(code,GenInstr(NULL,"move","$a0",TmpRegName(newReg),NULL));
+    AppendSeq(code,GenInstr(NULL,"syscall",NULL,NULL,NULL));
+  }else if(type==StringBaseType){
+    struct SymEntry * idEntry = LookupName(StringLiteralTable, k);
+    struct StrAttr * attribute;
+    if(!idEntry){
+      idEntry=EnterName(StringLiteralTable, k);
+      attribute = malloc(sizeof(struct StrAttr *));
+      attribute->label=strdup(GenLabel());
+      SetAttr(idEntry, STRING_KIND, attribute);
+    }else{
+      attribute = GetAttr(idEntry);
+    }
+    code = GenInstr(NULL,"li","$v0","4",NULL);
+    AppendSeq(code,GenInstr(NULL,"la","$a0",attribute->label,NULL));
     AppendSeq(code,GenInstr(NULL,"syscall",NULL,NULL,NULL));
   }
   ReleaseTmpReg(newReg);

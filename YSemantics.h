@@ -14,7 +14,7 @@ struct IdList {
   struct IdList * next;
 };
 enum IfTypes {IfType, IfElseType };
-enum BaseTypes { IntBaseType, ChrBaseType, PlusType, MinusType, TimesType, DivideType, LessThanType, GreaterThanType, EqualType, NotEqualType, GreaterThanOrEqualType, LessThanOrEqualType};
+enum BaseTypes { IntBaseType, ChrBaseType, StringBaseType, PlusType, MinusType, TimesType, DivideType, LessThanType, GreaterThanType, EqualType, NotEqualType, GreaterThanOrEqualType, LessThanOrEqualType};
 
 struct FuncDesc {
   enum BaseTypes returnType;
@@ -45,6 +45,10 @@ struct ExprResult {
 struct Attr {
   struct TypeDesc * typeDesc;
   char * reference;
+};
+
+struct StrAttr {
+  char * label;
 };
 
 // Supporting Routines

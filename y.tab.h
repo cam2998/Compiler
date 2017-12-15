@@ -68,7 +68,8 @@ extern int yydebug;
     LTOE_TOK = 22,
     IF_TOK = 23,
     WHILE_TOK = 24,
-    ELSE_TOK = 25
+    ELSE_TOK = 25,
+    STRINGLIT_TOK = 26
   };
 #endif
 /* Tokens.  */
@@ -96,6 +97,7 @@ extern int yydebug;
 #define IF_TOK 23
 #define WHILE_TOK 24
 #define ELSE_TOK 25
+#define STRINGLIT_TOK 26
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -112,7 +114,7 @@ union YYSTYPE
   struct ExprResult * ExprResult;
   struct CondResult * CondResult;
 
-#line 116 "y.tab.h" /* yacc.c:1909  */
+#line 118 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
