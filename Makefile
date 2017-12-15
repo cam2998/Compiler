@@ -61,7 +61,7 @@ symtest-2: SymTabDriver
 		rm out
 
 symgrind: SymTabDriver
-	valgrind --leak-check=full SymTabDriver SymData.txt
+	valgrind --leak-check=full ./SymTabDriver SymData-2.in
 
 
 #===========================
@@ -121,7 +121,7 @@ rdtest5: 	RecDescent
 #===========================
 # Parser Stage 1 & 2
 ParserScanner.o: ParserScanner.l IOMngr.h ParserGrammar.o
-ParserGrammar.o: y.tab.h
+ParserGrammar.o: ParserGrammar.y y.tab.h
 Parse.o: Parse.c Grammar.h Scanner.h IOMngr.h
 Parse: Parse.o ParserGrammar.o ParserScanner.o IOMngr.o
 
@@ -132,9 +132,42 @@ parse1:	Parse
 parse2:	Parse
 	./Parse ParSrc-2
 
+#===========================
+# Semantics
+CGTest.o:     CGTest.c YCodeGen.h
+CGTest:       CGTest.o YCodeGen.o
+
+YCodeGen.o:	YCodeGen.c YCodeGen.h
+
+YScanner.o: 	YScanner.l IOMngr.h YSemantics.h YGrammar.o
+YGrammar.o:		YGrammar.y y.tab.h
+YSemantics.o: 	YSemantics.c YSemantics.h
+Y.o: 		Y.c Grammar.h YScanner.l IOMngr.h
+Y:		Y.o SymTab.o IOMngr.o YScanner.o YGrammar.o YSemantics.o YCodeGen.o
+
+ytest:	y1test y2test y3test y4test y5test
+
+y1test:	Y
+	./Y y1
+
+y2test: Y
+	./Y y2
+	spim -noexception -file y2.asm < y2.in
+
+y3test: Y
+	./Y y3
+	spim -noexception -file y3.asm < y3.in
+
+y4test: Y
+	./Y y4
+	spim -noexception -file y4.asm < y4.in
+
+y5test: Y yfactors.src
+	./Y yfactors
+	spim -noexception -file yfactors.asm < yfactors.in
 
 
 
 # Other
 clean:
-	rm -f *.o SymTabDriver IOMngrDriver ScannerDriver RecDescent Parse
+	rm -f *.o SymTabDriver IOMngrDriver ScannerDriver RecDescent Parse Y

@@ -107,7 +107,7 @@ GetAttrKind(struct SymEntry *anEntry) {
 
 //done
 void
-SetAttr(struct SymEntry *anEntry, int kind, void *attributes) {
+SetAttr(struct SymEntry *anEntry, int kind, void * attributes) {
   if(kind!=-1){
     anEntry->attrKind = kind;
   }else{
@@ -118,13 +118,15 @@ SetAttr(struct SymEntry *anEntry, int kind, void *attributes) {
   }else{
     anEntry->attributes = NULL;
   }
+    anEntry->attrKind = kind;
+    anEntry->attributes = attributes;
 }
 
 //done
 void *
 GetAttr(struct SymEntry *anEntry) {
   if(anEntry==NULL) return NULL;
-  if(anEntry->attributes==NULL) return NULL;
+  if(anEntry->attributes==NULL)return NULL;
   return anEntry->attributes;
   //return NULL;
 }

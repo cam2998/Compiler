@@ -45,43 +45,77 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    INT_TOK = 1,
-    CHR_TOK = 2,
-    ASSIGN_TOK = 3,
-    SEMI_TOK = 4,
-    COMMA_TOK = 5,
-    LPAREN_TOK = 6,
-    RPAREN_TOK = 7,
-    LBRACE_TOK = 8,
-    RBRACE_TOK = 9,
-    MINUS_TOK = 10,
-    PLUS_TOK = 11,
+    IDENT_TOK = 1,
+    DECL_TOK = 2,
+    IMPL_TOK = 3,
+    INT_TOK = 4,
+    CHR_TOK = 5,
+    CHRLIT_TOK = 6,
+    INTLIT_TOK = 7,
+    RB_TOK = 8,
+    LB_TOK = 9,
+    PLUS_TOK = 10,
+    MINUS_TOK = 11,
     TIMES_TOK = 12,
     DIV_TOK = 13,
-    INTLIT_TOK = 14,
-    IDENT_TOK = 15
+    PUT_TOK = 14,
+    GET_TOK = 15,
+    NOTEQ_TOK = 16,
+    EQ_TOK = 17,
+    GT_TOK = 18,
+    LT_TOK = 19,
+    GTOE_TOK = 21,
+    LTOE_TOK = 22,
+    IF_TOK = 23,
+    WHILE_TOK = 24,
+    ELSE_TOK = 25
   };
 #endif
 /* Tokens.  */
-#define INT_TOK 1
-#define CHR_TOK 2
-#define ASSIGN_TOK 3
-#define SEMI_TOK 4
-#define COMMA_TOK 5
-#define LPAREN_TOK 6
-#define RPAREN_TOK 7
-#define LBRACE_TOK 8
-#define RBRACE_TOK 9
-#define MINUS_TOK 10
-#define PLUS_TOK 11
+#define IDENT_TOK 1
+#define DECL_TOK 2
+#define IMPL_TOK 3
+#define INT_TOK 4
+#define CHR_TOK 5
+#define CHRLIT_TOK 6
+#define INTLIT_TOK 7
+#define RB_TOK 8
+#define LB_TOK 9
+#define PLUS_TOK 10
+#define MINUS_TOK 11
 #define TIMES_TOK 12
 #define DIV_TOK 13
-#define INTLIT_TOK 14
-#define IDENT_TOK 15
+#define PUT_TOK 14
+#define GET_TOK 15
+#define NOTEQ_TOK 16
+#define EQ_TOK 17
+#define GT_TOK 18
+#define LT_TOK 19
+#define GTOE_TOK 21
+#define LTOE_TOK 22
+#define IF_TOK 23
+#define WHILE_TOK 24
+#define ELSE_TOK 25
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+
+union YYSTYPE
+{
+#line 12 "YGrammar.y" /* yacc.c:1909  */
+
+  int Integer;
+  char * Text;
+  struct IdList * IdList;
+  enum BaseTypes BaseType;
+  struct InstrSeq * InstrSeq;
+  struct ExprResult * ExprResult;
+  struct CondResult * CondResult;
+
+#line 116 "y.tab.h" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
