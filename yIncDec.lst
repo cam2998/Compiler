@@ -1,0 +1,26 @@
+1:  decl main() : int;
+2:  decl x,y : int;
+3:  
+4:  impl main(){
+5:    x = get(int);
+6:    y = 2;
+7:    put('\n');
+8:    put(y);put("++ = ");
+9:    y++;
+10:    put(y);
+11:    put('\n');
+12:    put(x);put("-- = ");
+13:    x--;
+14:    put(x);
+15:    put('\n');
+16:    put(x);put("-- = ");
+17:    x--;
+18:    put(x);
+19:    put('\n');
+20:    put(x);put("-- = ");
+21:    x--;
+22:    put(x);
+23:    put('\n');
+24:  };
+0:      
+    -A Parse Successful

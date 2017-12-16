@@ -69,6 +69,7 @@ struct ExprResult *     GetFunc();
 struct InstrSeq *       PutFunc(char * k, enum BaseTypes baseType);
 struct InstrSeq *       MakeWhile( struct CondResult * cond, struct InstrSeq * body);
 struct InstrSeq *       MakeIf( struct CondResult * cond, struct InstrSeq * body1, enum IfTypes type, struct InstrSeq * body2);
+struct InstrSeq *       IncDec(char * k, enum BaseTypes baseType);
 
 void                    Finish();
 

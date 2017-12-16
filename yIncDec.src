@@ -1,0 +1,24 @@
+decl main() : int;
+decl x,y : int;
+
+impl main(){
+  x = get(int);
+  y = 2;
+  put('\n');
+  put(y);put("++ = ");
+  y++;
+  put(y);
+  put('\n');
+  put(x);put("-- = ");
+  x--;
+  put(x);
+  put('\n');
+  put(x);put("-- = ");
+  x--;
+  put(x);
+  put('\n');
+  put(x);put("-- = ");
+  x--;
+  put(x);
+  put('\n');
+};

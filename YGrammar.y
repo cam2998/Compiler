@@ -70,6 +70,9 @@
 %token WHILE_TOK     24
 %token ELSE_TOK      25
 %token STRINGLIT_TOK 26
+%token BAND_TOK      27
+%token BOR_TOK       28
+
 
 
 // can't go past 31 without conflicting with single char tokens
@@ -113,6 +116,8 @@ Stmt          : PutF                                                     { $$ = 
 Stmt          : WHILE_TOK '(' Cond ')' FuncBody                          { $$ = MakeWhile($3,$5); };
 Stmt          : IF_TOK '(' Cond ')' FuncBody ELSE_TOK FuncBody           { $$ = MakeIf($3,$5, IfElseType, $7); };
 Stmt          : IF_TOK '(' Cond ')' FuncBody                             { $$ = MakeIf($3,$5, IfType, NULL); };
+Stmt          : Id PLUS_TOK PLUS_TOK                                     { $$ = IncDec($1,PlusType);};
+Stmt          : Id MINUS_TOK MINUS_TOK                                   { $$ = IncDec($1,MinusType);};
 
 Cond          : Expr CondOp Expr                                         { $$ = ConcatenateCond($1,$2,$3); };
 

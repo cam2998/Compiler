@@ -166,7 +166,15 @@ y5test: Y yfactors.src
 	./Y yfactors
 	spim -noexception -file yfactors.asm < yfactors.in
 
+sem2test:	 feature1
 
+feature1:    Y
+						 echo "Testing increment and decrement"
+						 rm -f yIncDec.lst yIncDec.asm
+						 ./Y -l yIncDec
+						 cat yIncDec.lst
+						 cat yIncDec.asm
+						 spim -noexception -file yIncDec.asm < yIncDec.in
 
 # Other
 clean:

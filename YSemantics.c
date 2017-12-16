@@ -514,3 +514,19 @@ PutFunc(char * k, enum BaseTypes type){
   ReleaseTmpReg(newReg);
   return code;
 }
+
+struct InstrSeq *
+IncDec(char * k, enum BaseTypes baseType){
+  struct SymEntry * idEntry = LookupName(IdentifierTable, k);
+  if(!idEntry)return NULL; //TODO: post message
+  struct Attr * attribute = GetAttr(idEntry);
+  int newReg = AvailTmpReg();
+  struct InstrSeq * code=GenInstr(NULL,"lw",TmpRegName(newReg),attribute->reference,NULL);
+  char * immed;
+  if(baseType==PlusType) immed="1";
+  if(baseType==MinusType) immed="-1";
+  AppendSeq(code,GenInstr(NULL,"addi",TmpRegName(newReg),TmpRegName(newReg),immed));
+  AppendSeq(code,GenInstr(NULL,"sw",TmpRegName(newReg),attribute->reference,NULL));
+  ReleaseTmpReg(newReg);
+  return code;
+}
