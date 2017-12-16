@@ -1,0 +1,14 @@
+1:  decl main() : int;
+2:  decl x,y,z : int;
+3:  
+4:  impl main(){
+5:    x = 1;
+6:    y = 2;
+7:    z = 3;
+8:    if (x < y && y < z && x + y == z) { put("first true\n"); };
+9:    if (x > y || (y < z && x + y == z)) { put("second true\n"); };
+10:    if (x > y || y > z) { put("third true\n"); };
+11:    if ( !(x > y || y > z) ) { put("forth true\n"); };
+12:  };
+0:      
+    -A Parse Successful

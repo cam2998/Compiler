@@ -41,7 +41,11 @@
 %type <Text> ChrLit
 %type <Text> StringLit
 %type <CondResult> Cond
+%type <CondResult> CondExpr
+%type <CondResult> CondTerm
+%type <CondResult> CondFactor
 %type <BaseType> CondOp
+%type <InstrSeq> IncDec
 
 /* List of token grammar name and corresponding numbers */
 /* y.tab.h will be generated from these for use by scanner*/
@@ -113,13 +117,26 @@ FuncStmts     :                                                          { $$ = 
 
 Stmt          : AssignStmt                                               { $$ = $1; };
 Stmt          : PutF                                                     { $$ = $1; };
-Stmt          : WHILE_TOK '(' Cond ')' FuncBody                          { $$ = MakeWhile($3,$5); };
-Stmt          : IF_TOK '(' Cond ')' FuncBody ELSE_TOK FuncBody           { $$ = MakeIf($3,$5, IfElseType, $7); };
-Stmt          : IF_TOK '(' Cond ')' FuncBody                             { $$ = MakeIf($3,$5, IfType, NULL); };
-Stmt          : Id PLUS_TOK PLUS_TOK                                     { $$ = IncDec($1,PlusType);};
-Stmt          : Id MINUS_TOK MINUS_TOK                                   { $$ = IncDec($1,MinusType);};
+Stmt          : WHILE_TOK '(' CondExpr ')' FuncBody                      { $$ = MakeWhile($3,$5); };
+Stmt          : IF_TOK '(' CondExpr ')' FuncBody ELSE_TOK FuncBody       { $$ = MakeIf($3,$5, IfElseType, $7); };
+Stmt          : IF_TOK '(' CondExpr ')' FuncBody                         { $$ = MakeIf($3,$5, IfType, NULL); };
+Stmt          : IncDec                                                   { $$ = $1; };
 
-Cond          : Expr CondOp Expr                                         { $$ = ConcatenateCond($1,$2,$3); };
+CondExpr      : CondExpr BOR_TOK BOR_TOK CondTerm                        { $$ = ConcatenateCond($1, OrType, $4); };
+CondExpr      : CondTerm                                                 { $$ = $1; };
+
+CondTerm      : CondTerm BAND_TOK BAND_TOK CondFactor                    { $$ = ConcatenateCond($1, AndType, $4); };
+CondTerm      : CondFactor                                               { $$ = $1; };
+
+CondFactor    : '(' CondExpr ')'                                         { $$ = $2; };
+CondFactor    : '!' '(' CondExpr ')'                                     { $$ = NegateCond($3); };
+CondFactor    : Cond                                                     { $$ = $1; };
+Cond          : Expr CondOp Expr                                         { $$ = MakeCond($1,$2,$3); };
+
+
+IncDec        : Id PLUS_TOK PLUS_TOK                                     { $$ = IncDec($1,PlusType);};
+IncDec        : Id MINUS_TOK MINUS_TOK                                   { $$ = IncDec($1,MinusType);};
+
 
 CondOp        : NOTEQ_TOK                                                { $$ = NotEqualType; };
 CondOp        : EQ_TOK                                                   { $$ = EqualType; };
@@ -142,7 +159,7 @@ Expr          : Term                                                     { $$ = 
 
 GetF          : GET_TOK '(' INT_TOK ')'                                  { $$ = GetFunc(); };
 
-Term          : Term MultOp Factor                                         { $$ = Concatenate($1,$2,$3); };
+Term          : Term MultOp Factor                                       { $$ = Concatenate($1,$2,$3); };
 Term          : Factor                                                   { $$ = $1; };
 
 Factor        : '(' Expr ')'                                             { $$ = $2; };

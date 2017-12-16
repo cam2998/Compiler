@@ -87,6 +87,14 @@ void displayEntry(struct SymEntry * entry, int cnt, void * ignore) {
     case VOID_KIND: {
     } break;
     case INT_KIND: {
+      if (attr) {
+        printf("%-10s",attr->reference);
+        printf("     ");
+        struct TypeDesc * desc = attr->typeDesc;
+        char * typeStr = StringForType(desc);
+        printf("%-10s ",typeStr);
+        free(typeStr);
+      }
     } break;
     case STRING_KIND: {
     } break;
@@ -182,6 +190,7 @@ Finish() {
     for(i=0;i<IdentifierTable->size;i++){
       struct SymEntry * head=IdentifierTable->contents[i];
       while(head){
+        printf("%i\n",i );
         struct Attr * headAttr = (struct Attr *) GetAttr(head);
         int kind=GetAttrKind(head);
         if(kind==STRUCT_KIND){
@@ -338,11 +347,69 @@ Concatenate(struct ExprResult * first, enum BaseTypes baseType, struct ExprResul
   free(first);
   ret->code=code;
   ret->reg=newReg;
+  ret->baseType=second->baseType;
   return ret;
 }
 
+void
+NegateCond(struct CondResult * expression){
+  char * x = GenLabel();
+  AppendSeq(expression->code,GenInstr(NULL,"b",x,NULL,NULL));
+  AppendSeq(expression->code,expression->label);
+  expression->label=GenInstr(x,NULL,NULL,NULL,NULL);
+}
+
 struct CondResult *
-ConcatenateCond(struct ExprResult * first, enum BaseTypes baseType, struct ExprResult * second){
+ConcatenateCond(struct CondResult * first, enum IfTypes type, struct CondResult * second){
+  struct CondResult * ret = malloc(sizeof(struct CondResult *));
+  struct InstrSeq * code=first->code;
+  int newReg = AvailTmpReg();
+  switch(type){
+    case OrType: {
+      char * newLab=GenLabel();
+      ret->type=OrType;
+      if(first->type == AndType){
+        NegateCond(first);
+        code=first->code;
+        AppendSeq(code,second->code);
+        AppendSeq(code,first->label);
+        ret->label=second->label;
+      }else{
+        NegateCond(second);
+        code=second->code;
+        AppendSeq(code,first->code);
+        AppendSeq(code,second->label);
+        ret->label=first->label;
+      }
+    }break;
+
+    case AndType:{
+      if(first->type == OrType || second->type == OrType){
+        ret->type=OrType;
+      }else{
+        ret->type=AndType;
+      }
+      if(first->type == OrType){
+        code=second->code;
+        AppendSeq(code,first->code);
+      }else{
+        code=first->code;
+        AppendSeq(code,second->code);
+      }
+      ret->label=AppendSeq(first->label,second->label);
+    }
+  }
+  //free first and second regs?
+  free(second);
+  //free first and second?
+  free(first);
+  ret->code=code;
+  return ret;
+}
+
+
+struct CondResult *
+MakeCond(struct ExprResult * first, enum BaseTypes baseType, struct ExprResult * second){
   if(first->baseType!=second->baseType)return NULL; //TODO: Post message;
   struct CondResult * ret = malloc(sizeof(struct CondResult *));
   struct InstrSeq * code=first->code;
@@ -388,7 +455,8 @@ ConcatenateCond(struct ExprResult * first, enum BaseTypes baseType, struct ExprR
   ReleaseTmpReg(first->reg);
   free(first);
   ret->code=code;
-  ret->label=strdup(newLab);
+  ret->label=GenInstr(newLab,NULL,NULL,NULL,NULL);
+  ret->type=AndType;
   return ret;
 }
 
@@ -399,8 +467,8 @@ MakeWhile( struct CondResult * cond, struct InstrSeq * body){
   AppendSeq(code,cond->code);
   AppendSeq(code,body);
   AppendSeq(code,GenInstr(NULL,"b",newLab,NULL,NULL));
-  AppendSeq(code,GenInstr(cond->label,NULL,NULL,NULL,NULL));
-  //free(cond);
+  AppendSeq(code,cond->label);
+  free(cond);
   return code;
 }
 
@@ -408,13 +476,13 @@ struct InstrSeq *
 MakeIf( struct CondResult * cond, struct InstrSeq * body1, enum IfTypes type, struct InstrSeq * body2){
     struct InstrSeq * code = cond->code;
     AppendSeq(code,body1);
-    if(type==IfType) return AppendSeq(code,GenInstr(cond->label,NULL,NULL,NULL,NULL));
+    if(type==IfType) return AppendSeq(code,cond->label);
     char * newLab = GenLabel();
     AppendSeq(code,GenInstr(NULL,"b",newLab,NULL,NULL));
-    AppendSeq(code,GenInstr(cond->label,NULL,NULL,NULL,NULL));
+    AppendSeq(code,cond->label);
     AppendSeq(code,body2);
     AppendSeq(code,GenInstr(newLab,NULL,NULL,NULL,NULL));
-    //free(cond);
+    free(cond);
     return code;
 }
 
@@ -437,10 +505,10 @@ struct ExprResult *
 createExprResult(char * k, enum BaseTypes baseType){
   struct ExprResult * ret = malloc(sizeof(struct ExprResult *));
   int newReg = AvailTmpReg();
-  struct InstrSeq * code=GenInstr(NULL,"li",TmpRegName(newReg),k,NULL);
-  ret->code=code;
   ret->reg=newReg;
   ret->baseType=baseType;
+  struct InstrSeq * code=GenInstr(NULL,"li",TmpRegName(newReg),k,NULL);
+  ret->code=code;
   return ret;
 }
 
@@ -502,7 +570,7 @@ PutFunc(char * k, enum BaseTypes type){
     if(!idEntry){
       idEntry=EnterName(StringLiteralTable, k);
       attribute = malloc(sizeof(struct StrAttr *));
-      attribute->label=strdup(GenLabel());
+      attribute->label=GenLabel();
       SetAttr(idEntry, STRING_KIND, attribute);
     }else{
       attribute = GetAttr(idEntry);

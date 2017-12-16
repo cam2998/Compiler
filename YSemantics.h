@@ -13,7 +13,7 @@ struct IdList {
   struct SymEntry * entry;
   struct IdList * next;
 };
-enum IfTypes {IfType, IfElseType };
+enum IfTypes {OrType, AndType, IfType, IfElseType };
 enum BaseTypes { IntBaseType, ChrBaseType, StringBaseType, PlusType, MinusType, TimesType, DivideType, LessThanType, GreaterThanType, EqualType, NotEqualType, GreaterThanOrEqualType, LessThanOrEqualType};
 
 struct FuncDesc {
@@ -32,7 +32,8 @@ struct TypeDesc {
 
 struct CondResult {
   struct InstrSeq * code;
-  char * label;
+  struct InstrSeq * label;
+  enum IfTypes type;
 };
 
 struct ExprResult {
@@ -60,7 +61,9 @@ struct TypeDesc * MakePrimDesc(enum BaseTypes type);
 struct TypeDesc * MakeFuncDesc(enum BaseTypes returnType);
 
 // Semantics Actions
-struct CondResult *     ConcatenateCond(struct ExprResult * first, enum BaseTypes baseType, struct ExprResult * second);
+void                    NegateCond(struct CondResult * expression);
+struct CondResult *     ConcatenateCond(struct CondResult * first, enum IfTypes type, struct CondResult * second);
+struct CondResult *     MakeCond(struct ExprResult * first, enum BaseTypes baseType, struct ExprResult * second);
 struct ExprResult *     Concatenate(struct ExprResult * first, enum BaseTypes baseType, struct ExprResult * second);
 struct ExprResult *     createExprResult(char * k, enum BaseTypes baseType);
 struct ExprResult *     loadExprResult(char * k);

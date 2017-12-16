@@ -166,7 +166,7 @@ y5test: Y yfactors.src
 	./Y yfactors
 	spim -noexception -file yfactors.asm < yfactors.in
 
-sem2test:	 feature1
+sem2test:	 feature1 feature2
 
 feature1:    Y
 						 echo "Testing increment and decrement"
@@ -175,6 +175,14 @@ feature1:    Y
 						 cat yIncDec.lst
 						 cat yIncDec.asm
 						 spim -noexception -file yIncDec.asm < yIncDec.in
+
+feature2:    Y
+							echo "Testing boolean operators"
+							rm -f ymybool.lst ymybool.asm
+			 				 ./Y -l ymybool
+						 	 cat ymybool.lst
+						 	 cat ymybool.asm
+						 	 spim -noexception -file ymybool.asm
 
 # Other
 clean:

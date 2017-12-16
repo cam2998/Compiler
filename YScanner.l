@@ -1,6 +1,6 @@
 Letter	[A-Za-z]
 Digit   [0-9]
-Cha      [\:\;\.\,\"\'\(\)\{\}\|\-\_\=\+\/\*\&\^\%\#\$\@\!\~\`\\\>\<\?\[\] ]
+Cha     [\:\;\.\,\"\'\(\)\{\}\|\-\_\=\+\/\*\&\^\%\#\$\@\!\~\`\\\>\<\?\[\] ]
 
 %{
 #include "IOMngr.h"
@@ -52,8 +52,10 @@ else                            { if (!IN_COMMENT) RETURN(ELSE_TOK); }
 \>\=                            { if (!IN_COMMENT) RETURN(GTOE_TOK); }
 \<\=                            { if (!IN_COMMENT) RETURN(LTOE_TOK); }
 \"({Letter}|{Cha}|\\{Letter})*\"                   { if (!IN_COMMENT) RETURN(STRINGLIT_TOK); }
-\&\&                            { if (!IN_COMMENT) RETURN(BAND_TOK); }
-\|\|                            { if (!IN_COMMENT) RETURN(BOR_TOK); }
+\&                              { if (!IN_COMMENT) RETURN(BAND_TOK); }
+\|                              { if (!IN_COMMENT) RETURN(BOR_TOK); }
+
+\!                              { if (!IN_COMMENT) RETURN('!');}
 \=                              { if (!IN_COMMENT) RETURN('='); }
 \;                              { if (!IN_COMMENT) RETURN(';'); }
 \(                              { if (!IN_COMMENT) RETURN('('); }
