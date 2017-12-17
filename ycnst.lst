@@ -1,0 +1,16 @@
+1:  decl main() : int;
+2:  decl x,y,z : int;
+3:  cnst this : 100 ;
+4:  
+5:  impl main(){
+6:    put("This should equal 100 \n");
+7:    put(this);
+8:    put('\n');
+9:    this = 5;
+10:    put("This should still be 100 even after someone tries to set it to something else\n");
+11:    put(this);
+12:    put('\n');
+13:    this = 5;
+14:  };
+0:      
+    -A Parse Successful

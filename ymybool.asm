@@ -4,6 +4,7 @@ __start:
 			jal			_main
 			li			$v0, 			10
 			syscall
+
 _main:
 			li			$t0, 			1
 			sw			$t0, 			_x

@@ -9,8 +9,8 @@ This repository contains files to be addded to your main project repository to i
 - Step 6, 10 pts
 - Step 7, 10 pts
 - Step 8, 10 pts
-- Step 9, 10 pts, Implement constants and constant expression evaluation.
-- Step 10, 15 pts, Implement a SWITCH construct.
+- Step 9, 10 pts
+- Step 10, 15 pts, Implement a SWITCH construct. (Do Today)
 - Step 11, 15 pts, Implement an array data type.
 - Step 12, 15 pts, Implement function calls for parameterless functions.
 - Step 13, 15 pts, Implement function parameters.

@@ -96,6 +96,7 @@ void
 WriteSeq(struct InstrSeq *ASeq) {
   struct InstrSeqNode * node = ASeq->head;
   while (node) {
+
     if (node->Label) fprintf(AssmFile,"%s:",node->Label);
     if (node->OpCode) {
 			fprintf(AssmFile,"\t\t\t%s",node->OpCode);

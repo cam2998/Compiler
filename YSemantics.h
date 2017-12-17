@@ -14,14 +14,14 @@ struct IdList {
   struct IdList * next;
 };
 enum IfTypes {OrType, AndType, IfType, IfElseType };
-enum BaseTypes { IntBaseType, ChrBaseType, StringBaseType, PlusType, MinusType, TimesType, DivideType, LessThanType, GreaterThanType, EqualType, NotEqualType, GreaterThanOrEqualType, LessThanOrEqualType};
+enum BaseTypes { IntBaseType, ChrBaseType, StringBaseType, ConstantBaseType, PlusType, MinusType, TimesType, DivideType, LessThanType, GreaterThanType, EqualType, NotEqualType, GreaterThanOrEqualType, LessThanOrEqualType};
 
 struct FuncDesc {
   enum BaseTypes returnType;
   struct InstrSeq * funcCode;
 };
 
-enum DeclTypes { PrimType, FuncType };
+enum DeclTypes { PrimType, FuncType, CnstType};
 struct TypeDesc {
   enum DeclTypes declType;
   union {
@@ -86,7 +86,7 @@ struct InstrSeq *       IncDec(char * k, enum BaseTypes baseType);
 
 void                    Finish();
 
-void                    ProcDecls(struct IdList * idList, enum BaseTypes baseType);
+void                    ProcDecls(struct IdList * idList, enum BaseTypes baseType, char * num);
 struct IdList *         AppendIdList(struct IdList * item, struct IdList * list);
 struct IdList *         ProcName(char * id, enum DeclTypes type);
 void                    ProcFunc(char * id, struct InstrSeq * instrs);

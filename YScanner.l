@@ -38,8 +38,9 @@ else                            { if (!IN_COMMENT) RETURN(ELSE_TOK); }
 for                             { if (!IN_COMMENT) RETURN(FOR_TOK); }
 loop                            { if (!IN_COMMENT) RETURN(LOOP_TOK); }
 break                           { if (!IN_COMMENT) RETURN(BREAK_TOK); }
+cnst                            { if (!IN_COMMENT) RETURN(CNST_TOK); }
 
-\'({Letter}|\>|\<|\=|\\{Letter})\'   { if (!IN_COMMENT) RETURN( CHRLIT_TOK ); }
+\'({Letter}|\>|\<|\=|\\{Letter}|{Digit})\'   { if (!IN_COMMENT) RETURN( CHRLIT_TOK ); }
 {Letter}({Letter}|{Digit})*			{ if (!IN_COMMENT) RETURN(IDENT_TOK); }
 \{                              { if (!IN_COMMENT) RETURN(LB_TOK); }
 \}                              { if (!IN_COMMENT) RETURN(RB_TOK); }
@@ -54,7 +55,7 @@ break                           { if (!IN_COMMENT) RETURN(BREAK_TOK); }
 \<                              { if (!IN_COMMENT) RETURN(LT_TOK); }
 \>\=                            { if (!IN_COMMENT) RETURN(GTOE_TOK); }
 \<\=                            { if (!IN_COMMENT) RETURN(LTOE_TOK); }
-\"({Letter}|{Cha}|\\{Letter})*\"                   { if (!IN_COMMENT) RETURN(STRINGLIT_TOK); }
+\"({Letter}|{Cha}|\\{Letter}|{Digit})*\"                   { if (!IN_COMMENT) RETURN(STRINGLIT_TOK); }
 \&                              { if (!IN_COMMENT) RETURN(BAND_TOK); }
 \|                              { if (!IN_COMMENT) RETURN(BOR_TOK); }
 

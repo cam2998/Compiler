@@ -1,0 +1,14 @@
+decl main() : int;
+decl x,y,z : int;
+cnst this : 100 ;
+
+impl main(){
+  put("This should equal 100 \n");
+  put(this);
+  put('\n');
+  this = 5;
+  put("This should still be 100 even after someone tries to set it to something else\n");
+  put(this);
+  put('\n');
+  this = 5;
+};

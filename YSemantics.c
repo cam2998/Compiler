@@ -17,7 +17,8 @@
 
 struct SymTab * IdentifierTable;
 struct SymTab * StringLiteralTable;
-enum AttrKinds { VOID_KIND = -1, INT_KIND, STRING_KIND, STRUCT_KIND };
+
+enum AttrKinds { VOID_KIND = -1, INT_KIND, STRING_KIND, STRUCT_KIND,CNST_KIND };
 
 char * BaseTypeNames[2] = { "int", "chr"};
 char * TypeNames[2] = { "", "func"};
@@ -90,6 +91,16 @@ void displayEntry(struct SymEntry * entry, int cnt, void * ignore) {
     case VOID_KIND: {
     } break;
     case INT_KIND: {
+      if (attr) {
+        printf("%-10s",attr->reference);
+        printf("     ");
+        struct TypeDesc * desc = attr->typeDesc;
+        char * typeStr = StringForType(desc);
+        printf("%-10s ",typeStr);
+        free(typeStr);
+      }
+    } break;
+    case CNST_KIND: {
       if (attr) {
         printf("%-10s",attr->reference);
         printf("     ");
@@ -181,12 +192,9 @@ Finish() {
   AppendSeq(textCode,GenInstr(NULL,".globl","__start",NULL,NULL));
   AppendSeq(textCode,GenInstr("__start",NULL,NULL,NULL,NULL));
 
-  AppendSeq(textCode,GenInstr(NULL,"jal",mainAttr->reference,NULL,NULL));
-  AppendSeq(textCode,GenInstr(NULL,"li","$v0","10",NULL));
-  AppendSeq(textCode,GenInstr(NULL,"syscall",NULL,NULL,NULL));
-
   // put functions in code seq
-  AppendSeq(textCode,mainAttr->typeDesc->funcDesc->funcCode);
+  struct InstrSeq * mainCode=GenInstr(NULL,NULL,NULL,NULL,NULL);
+  AppendSeq(mainCode,mainAttr->typeDesc->funcDesc->funcCode);
   //mainAttr->typeDesc->funcDesc->funcCode
   // put globals in data seg
     int i;
@@ -197,9 +205,12 @@ Finish() {
         struct Attr * headAttr = (struct Attr *) GetAttr(head);
         int kind=GetAttrKind(head);
         if(kind==STRUCT_KIND){
+          AppendSeq(mainCode,headAttr->typeDesc->funcDesc->funcCode);
+        }
+        if(kind==CNST_KIND){
           AppendSeq(textCode,headAttr->typeDesc->funcDesc->funcCode);
         }
-        if(kind==INT_KIND){
+        if(kind==INT_KIND||kind==CNST_KIND){
           char * c = strdup(headAttr->reference);
           AppendSeq(dataCode,GenInstr(c,".word","0",NULL,NULL));
         }
@@ -218,6 +229,12 @@ Finish() {
       }
     }
 
+
+
+    AppendSeq(textCode,GenInstr(NULL,"jal",mainAttr->reference,NULL,NULL));
+    AppendSeq(textCode,GenInstr(NULL,"li","$v0","10",NULL));
+    AppendSeq(textCode,GenInstr(NULL,"syscall",NULL,NULL,NULL));
+    AppendSeq(textCode,mainCode);
   // combine and write
   struct InstrSeq * moduleCode = AppendSeq(textCode,dataCode);
   WriteSeq(moduleCode);
@@ -229,36 +246,50 @@ Finish() {
 }
 
 void
-ProcDecls(struct IdList * idList, enum BaseTypes baseType) {
+ProcDecls(struct IdList * idList, enum BaseTypes baseType, char * num) {
   // walk IdList items
       // names on IdList are only specified as PrimType or FuncType
       // set type desc
     // global scope so will be allocated in data segment
     // reference string is id name with prepended "_"
-    while (idList != NULL) {
-      if (idList->entry->attrKind == PrimType) {
-        struct TypeDesc *desc = MakePrimDesc(baseType);
-        struct Attr * att=malloc(sizeof(struct Attr *));
-        att = (struct Attr *) GetAttr(idList->entry);
-        char *ref = malloc(strlen(idList->entry->name) + 3);
-        strcat(ref, "_");
-        strcat(ref, idList->entry->name);
-        att->reference=strdup(ref);
-        att->typeDesc=desc;
-        SetAttr(idList->entry, INT_KIND , att);
-      } else {
-        struct TypeDesc *desc = MakeFuncDesc(baseType);
-        struct Attr * att=malloc(sizeof(struct Attr));
-        att = (struct Attr *) GetAttr(idList->entry);
-        char *ref = malloc(strlen(idList->entry->name) + 2);
-        strcat(ref, "_");
-        strcat(ref, idList->entry->name);
-        att->reference=strdup(ref);
-        att->typeDesc=desc;
-        SetAttr(idList->entry, STRUCT_KIND, att);
+      while (idList != NULL) {
+        if (idList->entry->attrKind == PrimType) {
+          struct TypeDesc *desc = MakePrimDesc(baseType);
+          struct Attr * att=malloc(sizeof(struct Attr *));
+          att = (struct Attr *) GetAttr(idList->entry);
+          char *ref = malloc(strlen(idList->entry->name) + 3);
+          strcat(ref, "_");
+          strcat(ref, idList->entry->name);
+          att->reference=strdup(ref);
+          att->typeDesc=desc;
+          SetAttr(idList->entry, INT_KIND , att);
+        } else if (idList->entry->attrKind == CnstType) {
+          struct TypeDesc *desc = MakeFuncDesc(IntBaseType);
+          struct Attr * att=malloc(sizeof(struct Attr *));
+          att = (struct Attr *) GetAttr(idList->entry);
+          char *ref = malloc(strlen(idList->entry->name) + 3);
+          strcat(ref, "_");
+          strcat(ref, idList->entry->name);
+          att->reference=strdup(ref);
+          int reg=AvailTmpReg();
+          char this[10];
+          sprintf(this, "%d", atoi(num));
+          desc->funcDesc->funcCode=AppendSeq(GenInstr(NULL,"li",TmpRegName(reg),this,NULL),GenInstr(NULL,"sw",TmpRegName(reg),ref,NULL));
+          att->typeDesc=desc;
+          SetAttr(idList->entry, CNST_KIND , att);
+        } else {
+          struct TypeDesc *desc = MakeFuncDesc(baseType);
+          struct Attr * att=malloc(sizeof(struct Attr));
+          att = (struct Attr *) GetAttr(idList->entry);
+          char *ref = malloc(strlen(idList->entry->name) + 2);
+          strcat(ref, "_");
+          strcat(ref, idList->entry->name);
+          att->reference=strdup(ref);
+          att->typeDesc=desc;
+          SetAttr(idList->entry, STRUCT_KIND, att);
+        }
+        idList = idList->next;
       }
-      idList = idList->next;
-    }
 }
 
 struct IdList *
@@ -284,6 +315,7 @@ ProcName(char * id, enum DeclTypes type) {
   struct TypeDesc * typeD=NULL;
   if(type==PrimType)typeD=MakePrimDesc(-1);
   if(type==FuncType)typeD=MakeFuncDesc(-1);
+  if(type==CnstType)typeD=MakePrimDesc(-1);
   // create, init and set attr struct
   struct Attr * attribute=malloc(sizeof(struct Attr));
   attribute->typeDesc=typeD;

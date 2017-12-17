@@ -25,6 +25,8 @@
 %type <Text> Id
 %type <IdList> DeclList
 %type <IdList> DeclItem
+%type <IdList> CnstList
+%type <IdList> CnstItem
 %type <InstrSeq> DeclImpls
 %type <BaseType> Type
 %type <InstrSeq> FuncBody
@@ -50,6 +52,7 @@
 %type <InstrSeq> IncDecs
 %type <InstrSeq> Loop
 %type <Void> DecLoop
+%type <Text> Value
 
 /* List of token grammar name and corresponding numbers */
 /* y.tab.h will be generated from these for use by scanner*/
@@ -83,6 +86,7 @@
 %token FOR_TOK       29
 %token LOOP_TOK      30
 %token BREAK_TOK     31
+%token CNST_TOK      1000
 
 
 
@@ -96,9 +100,19 @@ Module        : DeclImpls                                                { Finis
 
 DeclImpls     : Decl DeclImpls                                           { };
 DeclImpls     : Impl DeclImpls                                           { };
+DeclImpls     : Cnst DeclImpls                                           { };
 DeclImpls     :                                                          { };
 
-Decl          : DECL_TOK DeclList ':' Type ';'                           { ProcDecls($2,$4); };
+
+Cnst          : CNST_TOK CnstList ':' Value ';'                          { ProcDecls($2,ConstantBaseType,$4); };
+Value         : INTLIT_TOK                                               { $$ = strdup(yytext); };
+
+CnstList      : CnstItem ',' CnstList                                    { $$ = AppendIdList($1,$3); };
+CnstList      : CnstItem                                                 { $$ = $1; };
+
+CnstItem      : Id                                                       { $$ = ProcName($1,CnstType); };
+
+Decl          : DECL_TOK DeclList ':' Type ';'                           { ProcDecls($2,$4,0); };
 
 DeclList      : DeclItem ',' DeclList                                    { $$ = AppendIdList($1,$3); };
 DeclList      : DeclItem                                                 { $$ = $1; };
@@ -124,7 +138,7 @@ FuncStmts     : BREAK_TOK ';' FuncStmts                                  { $$ = 
 FuncStmts     :                                                          { $$ = NULL; };
 
 Stmt          : LOOP_TOK Loop                                            { IncLoop(); $$=$2;};
-Loop       : FuncBody DecLoop                                            { $$ = MakeLoop($1); };
+Loop          : FuncBody DecLoop                                         { $$ = MakeLoop($1); };
 DecLoop       :                                                          {DecLoop();};
 Stmt          : AssignStmt                                               { $$ = $1; };
 Stmt          : PutF                                                     { $$ = $1; };
