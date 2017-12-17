@@ -42,6 +42,11 @@ struct ExprResult {
   enum BaseTypes baseType;
 };
 
+struct BreakResult {
+  struct InstrSeq * code;
+  struct InstrSeq * label;
+};
+
 // Symbol Table Structures
 struct Attr {
   struct TypeDesc * typeDesc;
@@ -61,7 +66,12 @@ struct TypeDesc * MakePrimDesc(enum BaseTypes type);
 struct TypeDesc * MakeFuncDesc(enum BaseTypes returnType);
 
 // Semantics Actions
-void                    NegateCond(struct CondResult * expression);
+void                    IncLoop();
+void                    DecLoop();
+struct InstrSeq *       MakeLoop( struct InstrSeq * breakR);
+struct InstrSeq *       AppendBreak(struct InstrSeq * code);
+struct InstrSeq *       MakeFor(struct InstrSeq * assign, struct CondResult * condition ,struct InstrSeq * incdecs, struct InstrSeq * funbody );
+struct CondResult *     NegateCond(struct CondResult * expression);
 struct CondResult *     ConcatenateCond(struct CondResult * first, enum IfTypes type, struct CondResult * second);
 struct CondResult *     MakeCond(struct ExprResult * first, enum BaseTypes baseType, struct ExprResult * second);
 struct ExprResult *     Concatenate(struct ExprResult * first, enum BaseTypes baseType, struct ExprResult * second);

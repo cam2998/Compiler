@@ -1,0 +1,19 @@
+decl main() : int;
+decl x: int;
+
+impl main(){
+  for(x=0; x<5 ;x++){
+    put('\n');
+    put("x=");
+    put(x);
+    put('\n');
+    put("loop");
+    put('\n');
+  };
+  put('\n');
+  put("x=");
+  put(x);
+  put('\n');
+  put("done");
+  put('\n');
+};

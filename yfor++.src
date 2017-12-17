@@ -1,0 +1,25 @@
+decl main() : int;
+decl x,y : int;
+
+impl main(){
+  for(x=0,y=5; x<5 && y>2 ;x++,y--){
+    put('\n');
+    put("y=");
+    put(y);
+    put('\n');
+    put("x=");
+    put(x);
+    put('\n');
+    put("loop");
+    put('\n');
+  };
+  put('\n');
+  put("y=");
+  put(y);
+  put('\n');
+  put("x=");
+  put(x);
+  put('\n');
+  put("done");
+  put('\n');
+};

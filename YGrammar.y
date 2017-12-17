@@ -31,6 +31,7 @@
 %type <InstrSeq> FuncStmts
 %type <InstrSeq> Stmt
 %type <InstrSeq> AssignStmt
+%type <InstrSeq> Assigns
 %type <BaseType> AddOp
 %type <BaseType> MultOp
 %type <ExprResult> Expr
@@ -46,6 +47,9 @@
 %type <CondResult> CondFactor
 %type <BaseType> CondOp
 %type <InstrSeq> IncDec
+%type <InstrSeq> IncDecs
+%type <InstrSeq> Loop
+%type <Void> DecLoop
 
 /* List of token grammar name and corresponding numbers */
 /* y.tab.h will be generated from these for use by scanner*/
@@ -76,6 +80,9 @@
 %token STRINGLIT_TOK 26
 %token BAND_TOK      27
 %token BOR_TOK       28
+%token FOR_TOK       29
+%token LOOP_TOK      30
+%token BREAK_TOK     31
 
 
 
@@ -113,14 +120,26 @@ FuncBody      : LB_TOK FuncStmts RB_TOK                                  { $$ = 
 FuncBody      : LB_TOK  RB_TOK                                           {  };
 
 FuncStmts     : Stmt ';' FuncStmts                                       { $$ = AppendSeq($1,$3); };
+FuncStmts     : BREAK_TOK ';' FuncStmts                                  { $$ = AppendBreak($3); };
 FuncStmts     :                                                          { $$ = NULL; };
 
+Stmt          : LOOP_TOK Loop                                            { IncLoop(); $$=$2;};
+Loop       : FuncBody DecLoop                                            { $$ = MakeLoop($1); };
+DecLoop       :                                                          {DecLoop();};
 Stmt          : AssignStmt                                               { $$ = $1; };
 Stmt          : PutF                                                     { $$ = $1; };
 Stmt          : WHILE_TOK '(' CondExpr ')' FuncBody                      { $$ = MakeWhile($3,$5); };
 Stmt          : IF_TOK '(' CondExpr ')' FuncBody ELSE_TOK FuncBody       { $$ = MakeIf($3,$5, IfElseType, $7); };
 Stmt          : IF_TOK '(' CondExpr ')' FuncBody                         { $$ = MakeIf($3,$5, IfType, NULL); };
 Stmt          : IncDec                                                   { $$ = $1; };
+Stmt          : FOR_TOK'('Assigns ';' CondExpr ';'IncDecs')'FuncBody     { $$ = MakeFor($3,$5,$7,$9); };
+
+
+Assigns       : Assigns','AssignStmt                                     { $$ = AppendSeq($1,$3);};
+Assigns       : AssignStmt                                               { $$ = $1;};
+
+IncDecs       : IncDec','IncDecs                                         { $$ = AppendSeq($1,$3);};
+IncDecs       : IncDec                                                   { $$ = $1;};
 
 CondExpr      : CondExpr BOR_TOK BOR_TOK CondTerm                        { $$ = ConcatenateCond($1, OrType, $4); };
 CondExpr      : CondTerm                                                 { $$ = $1; };

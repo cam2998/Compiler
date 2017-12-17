@@ -26,6 +26,9 @@ char * TypeNames[2] = { "", "func"};
 char * Ops[] = { "add", "sub", "mul", "div"};
 char * BoolOps[] = { "and", "or", "not" };
 
+//loop level
+int LoopLevel=0;
+
 // corresponds to negation of enum Comparisons
 // enum Comparisons { LtCmp, LteCmp, GtCmp, GteCmp, EqCmp, NeqCmp };
 char * Branches[] = { "bge", "bg", "ble", "bl", "bne", "beq"};
@@ -319,7 +322,7 @@ ProcFunc(char * id, struct InstrSeq * instrs) {
   operators or simply use the operator character.*/
 
 struct ExprResult *
-Concatenate(struct ExprResult * first, enum BaseTypes baseType, struct ExprResult * second){
+ Concatenate(struct ExprResult * first, enum BaseTypes baseType, struct ExprResult * second){
   if(first->baseType!=second->baseType)return NULL; //TODO: Post message;
   struct ExprResult * ret = malloc(sizeof(struct ExprResult *));
   struct InstrSeq * code=first->code;
@@ -351,31 +354,79 @@ Concatenate(struct ExprResult * first, enum BaseTypes baseType, struct ExprResul
   return ret;
 }
 
-void
+struct CondResult *
 NegateCond(struct CondResult * expression){
   char * x = GenLabel();
   AppendSeq(expression->code,GenInstr(NULL,"b",x,NULL,NULL));
   AppendSeq(expression->code,expression->label);
   expression->label=GenInstr(x,NULL,NULL,NULL,NULL);
+  return expression;
+}
+
+struct InstrSeq *
+MakeFor(struct InstrSeq * assign, struct CondResult * condition ,struct InstrSeq * incdecs, struct InstrSeq * funbody ){
+  char * lab=GenLabel();
+  AppendSeq(assign,GenInstr(lab,NULL,NULL,NULL,NULL));
+  AppendSeq(assign,condition->code);
+  AppendSeq(assign,funbody);
+  AppendSeq(assign,incdecs);
+  AppendSeq(assign,GenInstr(NULL,"b",lab,NULL,NULL));
+  AppendSeq(assign,condition->label);
+  free(condition);
+  return assign;
+}
+
+struct InstrSeq *
+AppendBreak(struct InstrSeq * code){
+  char * exitloop = (char *) malloc(16);
+  sprintf(exitloop,"EXIT%d",(LoopLevel/2)+1);
+  code=AppendSeq(GenInstr(NULL,"b",exitloop,NULL,NULL),code);
+  return code;
+}
+
+void
+IncLoop(){
+  LoopLevel++;
+}
+
+void
+DecLoop(){
+  LoopLevel++;
+}
+
+char *
+GenLoopLabel(){
+  char *label = (char *) malloc(16);
+  sprintf(label,"LOOP%d",(LoopLevel/2)+1);
+  return label;
+}
+
+struct InstrSeq *
+MakeLoop( struct InstrSeq * breakR){
+  char * loop = GenLoopLabel();
+  char * exitloop = (char *) malloc(16);
+  breakR=AppendSeq(GenInstr(loop,NULL,NULL,NULL,NULL),breakR);
+  AppendSeq(breakR,GenInstr(NULL,"b",loop,NULL,NULL));
+  sprintf(exitloop,"EXIT%d",((LoopLevel-1)/2)+1);
+  AppendSeq(breakR,GenInstr(exitloop,NULL,NULL,NULL,NULL));
+  return breakR;
 }
 
 struct CondResult *
 ConcatenateCond(struct CondResult * first, enum IfTypes type, struct CondResult * second){
   struct CondResult * ret = malloc(sizeof(struct CondResult *));
   struct InstrSeq * code=first->code;
-  int newReg = AvailTmpReg();
   switch(type){
     case OrType: {
-      char * newLab=GenLabel();
       ret->type=OrType;
       if(first->type == AndType){
-        NegateCond(first);
+        first=NegateCond(first);
         code=first->code;
         AppendSeq(code,second->code);
         AppendSeq(code,first->label);
         ret->label=second->label;
       }else{
-        NegateCond(second);
+        first=NegateCond(second);
         code=second->code;
         AppendSeq(code,first->code);
         AppendSeq(code,second->label);

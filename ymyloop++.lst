@@ -1,0 +1,38 @@
+1:  decl main() : int;
+2:  decl x,y,z : int;
+3:  
+4:  impl main(){
+5:  put('\n');
+6:  y=0;
+7:  loop{
+8:    x=0;
+9:    loop{
+10:      if(x>1){
+11:        break;
+12:      };
+13:      put("x=");
+14:      put(x);
+15:      put('\n');
+16:      x++;
+17:    };
+18:    put("Out Of Loop Inner Loop");
+19:    put('\n');
+20:    if(y>3){
+21:      break;
+22:    };
+23:    if(y>4){
+24:      break;
+25:    };
+26:    if(y>5){
+27:      break;
+28:    };
+29:    put("y=");
+30:    put(y);
+31:    put('\n');
+32:    y++;
+33:    };
+34:    put("Out Of Loop Outer Loop");
+35:    put('\n');
+36:  };
+0:      
+    -A Parse Successful

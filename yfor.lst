@@ -1,0 +1,21 @@
+1:  decl main() : int;
+2:  decl x: int;
+3:  
+4:  impl main(){
+5:    for(x=0; x<5 ;x++){
+6:      put('\n');
+7:      put("x=");
+8:      put(x);
+9:      put('\n');
+10:      put("loop");
+11:      put('\n');
+12:    };
+13:    put('\n');
+14:    put("x=");
+15:    put(x);
+16:    put('\n');
+17:    put("done");
+18:    put('\n');
+19:  };
+0:      
+    -A Parse Successful

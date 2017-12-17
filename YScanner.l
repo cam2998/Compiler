@@ -35,6 +35,9 @@ get                             { if (!IN_COMMENT) RETURN(GET_TOK); }
 if                              { if (!IN_COMMENT) RETURN(IF_TOK); }
 while                           { if (!IN_COMMENT) RETURN(WHILE_TOK); }
 else                            { if (!IN_COMMENT) RETURN(ELSE_TOK); }
+for                             { if (!IN_COMMENT) RETURN(FOR_TOK); }
+loop                            { if (!IN_COMMENT) RETURN(LOOP_TOK); }
+break                           { if (!IN_COMMENT) RETURN(BREAK_TOK); }
 
 \'({Letter}|\>|\<|\=|\\{Letter})\'   { if (!IN_COMMENT) RETURN( CHRLIT_TOK ); }
 {Letter}({Letter}|{Digit})*			{ if (!IN_COMMENT) RETURN(IDENT_TOK); }

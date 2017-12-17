@@ -1,0 +1,19 @@
+1:  decl main() : int;
+2:  decl x,y,z : int;
+3:  
+4:  impl main(){
+5:    put('\n');
+6:    x=0;
+7:    loop{
+8:      if(x==5){
+9:      break;
+10:      };
+11:      put("x=");
+12:      put(x);
+13:      put('\n');
+14:      x++;
+15:    };
+16:    put("\n Out of Loop\n");
+17:  };
+0:      
+    -A Parse Successful

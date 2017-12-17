@@ -1,0 +1,36 @@
+decl main() : int;
+decl x,y,z : int;
+
+impl main(){
+put('\n');
+y=0;
+loop{
+  x=0;
+  loop{
+    if(x>1){
+      break;
+    };
+    put("x=");
+    put(x);
+    put('\n');
+    x++;
+  };
+  put("Out Of Loop Inner Loop");
+  put('\n');
+  if(y>3){
+    break;
+  };
+  if(y>4){
+    break;
+  };
+  if(y>5){
+    break;
+  };
+  put("y=");
+  put(y);
+  put('\n');
+  y++;
+  };
+  put("Out Of Loop Outer Loop");
+  put('\n');
+};

@@ -1,0 +1,17 @@
+decl main() : int;
+decl x,y,z : int;
+
+impl main(){
+  put('\n');
+  x=0;
+  loop{
+    if(x==5){
+    break;
+    };
+    put("x=");
+    put(x);
+    put('\n');
+    x++;
+  };
+  put("\n Out of Loop\n");
+};

@@ -166,7 +166,7 @@ y5test: Y yfactors.src
 	./Y yfactors
 	spim -noexception -file yfactors.asm < yfactors.in
 
-sem2test:	 feature1 feature2
+sem2test:	 feature1 feature2 feature3 feature4 feature5 feature6
 
 feature1:    Y
 						 echo "Testing increment and decrement"
@@ -183,6 +183,41 @@ feature2:    Y
 						 	 cat ymybool.lst
 						 	 cat ymybool.asm
 						 	 spim -noexception -file ymybool.asm
+
+feature3:    Y
+	echo "Testing basic for loop"
+	rm -f yfor.lst yfor.asm
+	./Y -l yfor
+	cat yfor.lst
+	cat yfor.asm
+	spim -noexception -file yfor.asm
+
+feature4:    Y
+		echo "Testing for with multiple fields in each part operators"
+		rm -f yfor++.lst yfor++.asm
+		./Y -l yfor++
+		cat yfor++.lst
+		cat yfor++.asm
+		spim -noexception -file yfor++.asm
+
+feature5:	Y
+	echo "Testing for loop/break"
+	rm -f ymyloop.lst ymyloop.asm
+	./Y -l ymyloop
+	cat ymyloop.lst
+	cat ymyloop.asm
+	spim -noexception -file ymyloop.asm
+
+
+feature6:	Y
+	echo "Testing for loop/break for nesting "
+	rm -f ymyloop++.lst ymyloop++.asm
+	./Y -l ymyloop++
+	cat ymyloop++.lst
+	cat ymyloop++.asm
+	spim -noexception -file ymyloop++.asm
+
+
 
 # Other
 clean:
