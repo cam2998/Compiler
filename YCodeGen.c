@@ -110,6 +110,22 @@ WriteSeq(struct InstrSeq *ASeq) {
   fclose(AssmFile);
 }
 
+void
+printSeq(struct InstrSeq * s){
+  struct InstrSeqNode * node = s->head;
+  while (node) {
+    if (node->Label) printf("%s:",node->Label);
+    if (node->OpCode) {
+			printf("\t\t\t%s",node->OpCode);
+    	if (node->Oprnd1) printf("\t\t\t%s",node->Oprnd1);
+    	if (node->Oprnd2) printf(", \t\t\t%s",node->Oprnd2);
+    	if (node->Oprnd3) printf(", \t\t\t%s",node->Oprnd3);
+    }
+		printf("\n");
+    node = node->next;
+  }
+}
+
 char *
 GenLabel(){
   char *label = (char *) malloc(8);

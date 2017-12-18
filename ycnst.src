@@ -11,4 +11,5 @@ impl main(){
   put(this);
   put('\n');
   this = 5;
+  };
 };

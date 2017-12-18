@@ -1,0 +1,26 @@
+decl main() : int;
+decl x,y,z : int;
+
+impl main(){
+  x=2;
+  switch( x ){
+  default:{
+   x=10000;
+  };
+    case 1:{
+      x=10;
+    };
+    case 2:{
+      x=20;
+    };
+    case 3:{
+      x=20;
+    };
+    case 4:{
+      x=20;
+    };
+  };
+  put('\n');
+  put(x);
+  put('\n');
+};

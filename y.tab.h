@@ -75,7 +75,10 @@ extern int yydebug;
     FOR_TOK = 29,
     LOOP_TOK = 30,
     BREAK_TOK = 31,
-    CNST_TOK = 1000
+    CNST_TOK = 1000,
+    SWITCH_TOK = 1001,
+    CASE_TOK = 1002,
+    DEF_TOK = 1003
   };
 #endif
 /* Tokens.  */
@@ -110,6 +113,9 @@ extern int yydebug;
 #define LOOP_TOK 30
 #define BREAK_TOK 31
 #define CNST_TOK 1000
+#define SWITCH_TOK 1001
+#define CASE_TOK 1002
+#define DEF_TOK 1003
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -126,7 +132,7 @@ union YYSTYPE
   struct ExprResult * ExprResult;
   struct CondResult * CondResult;
 
-#line 130 "y.tab.h" /* yacc.c:1909  */
+#line 136 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

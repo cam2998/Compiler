@@ -39,6 +39,9 @@ for                             { if (!IN_COMMENT) RETURN(FOR_TOK); }
 loop                            { if (!IN_COMMENT) RETURN(LOOP_TOK); }
 break                           { if (!IN_COMMENT) RETURN(BREAK_TOK); }
 cnst                            { if (!IN_COMMENT) RETURN(CNST_TOK); }
+switch                          { if (!IN_COMMENT) RETURN(SWITCH_TOK); }
+case                            { if (!IN_COMMENT) RETURN(CASE_TOK); }
+default                         { if (!IN_COMMENT) RETURN(DEF_TOK); }
 
 \'({Letter}|\>|\<|\=|\\{Letter}|{Digit})\'   { if (!IN_COMMENT) RETURN( CHRLIT_TOK ); }
 {Letter}({Letter}|{Digit})*			{ if (!IN_COMMENT) RETURN(IDENT_TOK); }

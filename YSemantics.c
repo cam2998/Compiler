@@ -29,6 +29,8 @@ char * BoolOps[] = { "and", "or", "not" };
 
 //loop level
 int LoopLevel=0;
+int SwitchLevel=0;
+int CaseLevel=0;
 
 // corresponds to negation of enum Comparisons
 // enum Comparisons { LtCmp, LteCmp, GtCmp, GteCmp, EqCmp, NeqCmp };
@@ -201,7 +203,6 @@ Finish() {
     for(i=0;i<IdentifierTable->size;i++){
       struct SymEntry * head=IdentifierTable->contents[i];
       while(head){
-        printf("%i\n",i );
         struct Attr * headAttr = (struct Attr *) GetAttr(head);
         int kind=GetAttrKind(head);
         if(kind==STRUCT_KIND){
@@ -294,6 +295,12 @@ ProcDecls(struct IdList * idList, enum BaseTypes baseType, char * num) {
 
 struct IdList *
 AppendIdList(struct IdList * item, struct IdList * list) {
+char *
+GenSwitchLabel(){
+  char * label = (char *) malloc(16);
+  sprintf(label,"SW_EXIT%d",SwitchLevel++);
+  return label;
+}
   struct IdList * original = list;
   while (list->next) {
     list = list->next;
@@ -321,6 +328,92 @@ ProcName(char * id, enum DeclTypes type) {
   attribute->typeDesc=typeD;
   SetAttr(node->entry, type , attribute);
   return node;
+}
+
+char *
+GenSwitchLabel(){
+  char * label = (char *) malloc(8);
+  sprintf(label,"S%d",SwitchLevel++);
+  return label;
+}
+
+char *
+GenCaseLabel(){
+  char * label = (char *) malloc(8);
+  sprintf(label,"C%d",CaseLevel++);
+  return label;
+}
+
+char *
+GenBodyLabel(){
+  char * label = (char *) malloc(8);
+  sprintf(label,"B%d",CaseLevel);
+  return label;
+}
+
+void
+IncSwitch(){
+  SwitchLevel++;
+}
+
+struct CondResult *
+MakeCase(struct ExprResult * expr, struct InstrSeq * body, struct CondResult * expression){
+  struct InstrSeq * code;
+  struct InstrSeq * casestmt;
+  struct CondResult * ret = malloc(sizeof(struct CondResult));
+  if(!expression){
+    int reg=AvailTmpReg();
+    char * label = GenSwitchLabel();
+    char * caselabel = GenCaseLabel();
+    char * casebody = GenBodyLabel();
+    ret->exitlabel=label;
+    ret->swlabel=GenInstr(label,NULL,NULL,NULL,NULL);
+    code=GenInstr(caselabel,NULL,NULL,NULL,NULL);
+    if(expr){
+      AppendSeq(code,expr->code);
+      AppendSeq(code,GenInstr(NULL,"bne",TmpRegName(reg),TmpRegName(expr->reg),label));
+      AppendSeq(code,GenInstr(NULL,"b", casebody,NULL,NULL));
+    }
+
+    ret->label=code;
+    ret->nextlabel=caselabel;
+    casestmt=GenInstr(casebody,NULL,NULL,NULL,NULL);
+    AppendSeq(casestmt,body);
+    ret->code=AppendSeq(casestmt,GenInstr(NULL,"b",label,NULL,NULL));
+
+    ret->reg=reg;
+  }else{
+    char * caselabel = GenCaseLabel();
+    char * casebody = GenBodyLabel();
+    code=GenInstr(caselabel,NULL,NULL,NULL,NULL);
+      AppendSeq(code,expr->code);
+      AppendSeq(code,GenInstr(NULL,"bne",TmpRegName(expression->reg),TmpRegName(expr->reg),expression->nextlabel));
+
+      AppendSeq(code,GenInstr(NULL,"b", casebody,NULL,NULL));
+    ret->label=AppendSeq(code,expression->label);
+    casestmt=expression->code;
+    AppendSeq(casestmt,GenInstr(casebody,NULL,NULL,NULL,NULL));
+    AppendSeq(casestmt,body);
+    ret->nextlabel=caselabel;
+    ret->swlabel=expression->swlabel;
+    ret->code=AppendSeq(casestmt,GenInstr(NULL,"b",expression->exitlabel,NULL,NULL));
+    ret->reg=expression->reg;
+    ret->exitlabel=expression->exitlabel;
+  }
+  if(expr)ReleaseTmpReg(expr->reg);
+  return ret;
+}
+
+struct InstrSeq *
+MakeSwitch( struct ExprResult * expr, struct CondResult * cond){
+  struct InstrSeq * code = expr->code;
+  AppendSeq(code,GenInstr(NULL, "move", TmpRegName(cond->reg),TmpRegName(expr->reg),NULL));
+  AppendSeq(code,cond->label);
+  AppendSeq(code,cond->code);
+  AppendSeq(code,cond->swlabel);
+  ReleaseTmpReg(cond->reg);
+  ReleaseTmpReg(expr->reg);
+  return code;
 }
 
 void

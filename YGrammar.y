@@ -51,8 +51,9 @@
 %type <InstrSeq> IncDec
 %type <InstrSeq> IncDecs
 %type <InstrSeq> Loop
-%type <Void> DecLoop
 %type <Text> Value
+%type <InstrSeq> Switch
+%type <CondResult> Cases
 
 /* List of token grammar name and corresponding numbers */
 /* y.tab.h will be generated from these for use by scanner*/
@@ -87,6 +88,9 @@
 %token LOOP_TOK      30
 %token BREAK_TOK     31
 %token CNST_TOK      1000
+%token SWITCH_TOK    1001
+%token CASE_TOK      1002
+%token DEF_TOK       1003
 
 
 
@@ -138,8 +142,6 @@ FuncStmts     : BREAK_TOK ';' FuncStmts                                  { $$ = 
 FuncStmts     :                                                          { $$ = NULL; };
 
 Stmt          : LOOP_TOK Loop                                            { IncLoop(); $$=$2;};
-Loop          : FuncBody DecLoop                                         { $$ = MakeLoop($1); };
-DecLoop       :                                                          {DecLoop();};
 Stmt          : AssignStmt                                               { $$ = $1; };
 Stmt          : PutF                                                     { $$ = $1; };
 Stmt          : WHILE_TOK '(' CondExpr ')' FuncBody                      { $$ = MakeWhile($3,$5); };
@@ -147,7 +149,13 @@ Stmt          : IF_TOK '(' CondExpr ')' FuncBody ELSE_TOK FuncBody       { $$ = 
 Stmt          : IF_TOK '(' CondExpr ')' FuncBody                         { $$ = MakeIf($3,$5, IfType, NULL); };
 Stmt          : IncDec                                                   { $$ = $1; };
 Stmt          : FOR_TOK'('Assigns ';' CondExpr ';'IncDecs')'FuncBody     { $$ = MakeFor($3,$5,$7,$9); };
+Stmt          : SWITCH_TOK '(' Expr ')' LB_TOK Cases RB_TOK              { $$ = MakeSwitch($3,$6); };
 
+Cases         : Cases CASE_TOK Expr ':' FuncBody ';'                     { $$ = MakeCase($3,$5,$1); };
+Cases         : Cases DEF_TOK ':' FuncBody ';'                           { $$ = MakeCase(NULL,$4,$1); };
+Cases         :                                                          { $$ = NULL; };
+
+Loop          : FuncBody                                                 { DecLoop();  $$ = MakeLoop($1);};
 
 Assigns       : Assigns','AssignStmt                                     { $$ = AppendSeq($1,$3);};
 Assigns       : AssignStmt                                               { $$ = $1;};

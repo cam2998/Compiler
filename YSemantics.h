@@ -34,17 +34,16 @@ struct CondResult {
   struct InstrSeq * code;
   struct InstrSeq * label;
   enum IfTypes type;
+  int reg;
+  char * nextlabel;
+  struct InstrSeq * swlabel;
+  char * exitlabel;
 };
 
 struct ExprResult {
   struct InstrSeq * code;
   int reg;
   enum BaseTypes baseType;
-};
-
-struct BreakResult {
-  struct InstrSeq * code;
-  struct InstrSeq * label;
 };
 
 // Symbol Table Structures
@@ -65,9 +64,13 @@ void ListIdentifierTable();
 struct TypeDesc * MakePrimDesc(enum BaseTypes type);
 struct TypeDesc * MakeFuncDesc(enum BaseTypes returnType);
 
+
 // Semantics Actions
+void                    IncSwitch();
 void                    IncLoop();
 void                    DecLoop();
+struct CondResult *     MakeCase(struct ExprResult* expr, struct InstrSeq * body, struct CondResult * expression);
+struct InstrSeq *       MakeSwitch( struct ExprResult * expr, struct CondResult * cond);
 struct InstrSeq *       MakeLoop( struct InstrSeq * breakR);
 struct InstrSeq *       AppendBreak(struct InstrSeq * code);
 struct InstrSeq *       MakeFor(struct InstrSeq * assign, struct CondResult * condition ,struct InstrSeq * incdecs, struct InstrSeq * funbody );

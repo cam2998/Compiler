@@ -166,7 +166,7 @@ y5test: Y yfactors.src
 	./Y yfactors
 	spim -noexception -file yfactors.asm < yfactors.in
 
-sem2test:	 feature1 feature2 feature3 feature4 feature5 feature6 feature7
+sem2test:	 feature1 feature2 feature3 feature4 feature5 feature6 feature7 feature8
 
 feature1:    Y
 						 echo "Testing increment and decrement"
@@ -217,13 +217,21 @@ feature6:	Y
 	cat ymyloop++.asm
 	spim -noexception -file ymyloop++.asm
 
-feature7:	Y	
+feature7:	Y
 	echo "Testing for constants"
 	rm -f ycnst.lst ycnst.asm
 	./Y -l ycnst
 	cat ycnst.lst
 	cat ycnst.asm
 	spim -noexception -file ycnst.asm
+
+feature8:	Y
+	echo "Testing for switch (if theres a default it has to be at top to work)"
+	rm -f ycase.lst ycase.asm
+	./Y -l ycase
+	cat ycase.lst
+	cat ycase.asm
+	spim -noexception -file ycase.asm
 
 
 
