@@ -1,0 +1,20 @@
+decl main() : int;
+decl x,y,z : int;
+
+impl main(){
+  g : 6;
+  put('\n');
+  put(g);
+  put('\n');
+  put(l);
+  while(g<=10){
+   k:2;
+   g=g+k;
+   put('\n');
+   put(g);
+  };
+  put('\n');
+  put("Printing K next. Should be nothing since its out of scope\n");
+  put(k);
+  put('\n');
+};

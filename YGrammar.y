@@ -52,8 +52,9 @@
 %type <InstrSeq> IncDecs
 %type <InstrSeq> Loop
 %type <Text> Value
-%type <InstrSeq> Switch
 %type <CondResult> Cases
+%type <Text> IntLit
+%type <Void> Start
 
 /* List of token grammar name and corresponding numbers */
 /* y.tab.h will be generated from these for use by scanner*/
@@ -134,13 +135,17 @@ Impl          : IMPL_TOK Id FuncArgNames FuncBody ';'                    { ProcF
 
 FuncArgNames  : '('  ')'                                                 {  };
 
-FuncBody      : LB_TOK FuncStmts RB_TOK                                  { $$ = $2; };
-FuncBody      : LB_TOK  RB_TOK                                           {  };
+FuncBody      : Start FuncStmts RB_TOK                                  { $$ = $2;  DeleteTable(); };
+FuncBody      : LB_TOK  RB_TOK                                          {  };
 
-FuncStmts     : Stmt ';' FuncStmts                                       { $$ = AppendSeq($1,$3); };
+Start         : LB_TOK                                                   { NewTable(); };
+
+FuncStmts     : Stmt ';' FuncStmts                                       { $$ = AppendSeq($1,$3);};
 FuncStmts     : BREAK_TOK ';' FuncStmts                                  { $$ = AppendBreak($3); };
-FuncStmts     :                                                          { $$ = NULL; };
+FuncStmts     :                                                          {  $$ = NULL; };
 
+Stmt          : Id ':' ChrLit                                            { $$ = LocDecl($1,$3,ChrBaseType); };
+Stmt          : Id ':' IntLit                                            { $$ = LocDecl($1,$3,IntBaseType); };
 Stmt          : LOOP_TOK Loop                                            { IncLoop(); $$=$2;};
 Stmt          : AssignStmt                                               { $$ = $1; };
 Stmt          : PutF                                                     { $$ = $1; };
@@ -192,6 +197,7 @@ PutF          : PUT_TOK '(' StringLit  ')'                               { $$ = 
 
 StringLit     : STRINGLIT_TOK                                            { $$ = strdup(yytext); };
 ChrLit        : CHRLIT_TOK                                               { $$ = strdup(yytext); };
+IntLit         :INTLIT_TOK                                               { $$ = strdup(yytext); };
 
 AssignStmt    : Id '=' Expr                                              { $$ = genStoreWord( $1 , $3); };
 
@@ -209,7 +215,7 @@ Factor        : Id                                                       { $$ = 
 Factor        : INTLIT_TOK                                               { $$ = createExprResult( strdup( yytext ),
                                                                           IntBaseType); };
 Factor        : GetF                                                     { $$ = $1; };
-Factor        : CHRLIT_TOK                                               {  };
+Factor        : ChrLit                                                   {  };
 
 AddOp		      :	MINUS_TOK                                                { $$ = MinusType; };
 AddOp		      :	PLUS_TOK                                                 { $$ = PlusType; };

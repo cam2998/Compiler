@@ -11,8 +11,6 @@
 11:    put(this);
 12:    put('\n');
 13:    this = 5;
-14:    };
-15:  };
-    A
-    -A ERROR "syntax error" token: "}"
-    -B Parse Unsuccessful
+14:  };
+0:      
+    -A Parse Successful

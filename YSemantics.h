@@ -66,6 +66,8 @@ struct TypeDesc * MakeFuncDesc(enum BaseTypes returnType);
 
 
 // Semantics Actions
+void                    NewTable();
+void                    DeleteTable();
 void                    IncSwitch();
 void                    IncLoop();
 void                    DecLoop();

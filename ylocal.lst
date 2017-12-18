@@ -1,0 +1,22 @@
+1:  decl main() : int;
+2:  decl x,y,z : int;
+3:  
+4:  impl main(){
+5:    g : 6;
+6:    put('\n');
+7:    put(g);
+8:    put('\n');
+9:    put(l);
+10:    while(g<=10){
+11:     k:2;
+12:     g=g+k;
+13:     put('\n');
+14:     put(g);
+15:    };
+16:    put('\n');
+17:    put("Printing K next. Should be nothing since its out of scope\n");
+18:    put(k);
+19:    put('\n');
+20:  };
+0:      
+    -A Parse Successful

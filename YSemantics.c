@@ -18,6 +18,8 @@
 struct SymTab * IdentifierTable;
 struct SymTab * StringLiteralTable;
 
+struct InstrSeq * localvars;
+
 enum AttrKinds { VOID_KIND = -1, INT_KIND, STRING_KIND, STRUCT_KIND,CNST_KIND };
 
 char * BaseTypeNames[2] = { "int", "chr"};
@@ -51,6 +53,7 @@ void
 InitSemantics() {
   IdentifierTable = CreateSymTab(100,"global",NULL);
   StringLiteralTable = CreateSymTab(1,"literals", NULL);
+  localvars=GenInstr(NULL,".data",NULL,NULL,NULL);
 }
 
 char *
@@ -173,8 +176,30 @@ FreeEntryAttr(struct SymEntry * entry, int cnt, void * ignore) {
   }
 }
 
+
+void
+NewTable(){
+  IdentifierTable=CreateSymTab(1,"local",IdentifierTable);
+}
 // Semantics Actions
 
+void
+DeleteTable(){
+int i;
+for(i=0;i<IdentifierTable->size;i++){
+    struct SymEntry * head=IdentifierTable->contents[i];
+    while(head){
+      struct Attr * headAttr = (struct Attr *) GetAttr(head);
+      int kind=GetAttrKind(head);
+      if(kind==INT_KIND){
+        char * c = strdup(headAttr->reference);
+        AppendSeq(localvars,GenInstr(c,".word","0",NULL,NULL));
+      }
+      head=head->next;
+    }
+  }
+  IdentifierTable=IdentifierTable->parent;
+}
 
 void
 Finish() {
@@ -182,7 +207,7 @@ Finish() {
   ListIdentifierTable();
 
   struct InstrSeq * textCode = GenInstr(NULL,".text",NULL,NULL,NULL);
-  struct InstrSeq * dataCode = GenInstr(NULL,".data",NULL,NULL,NULL);
+  struct InstrSeq * dataCode = localvars;
   // form module preamble
   struct SymEntry * mainEntry = LookupName(IdentifierTable,"main");
   if (!mainEntry) {
@@ -244,6 +269,36 @@ Finish() {
   FreeSeq(moduleCode);
   CloseCodeGen();
   fprintf(stderr,"Finish \n");
+}
+
+struct InstrSeq *
+LocDecl(char * k, char * num, enum BaseTypes baseType){
+  struct SymEntry * name = EnterName(IdentifierTable,k);
+  struct TypeDesc *desc = MakePrimDesc(baseType);
+  struct Attr * att=malloc(sizeof(struct Attr *));
+  char * ref = malloc(strlen(name->name) + 3);
+  strcat(ref, "_");
+  strcat(ref, name->name);
+  att->reference=strdup(ref);
+  att->typeDesc=desc;
+  SetAttr(name, INT_KIND , att);
+  int reg = AvailTmpReg();
+  ReleaseTmpReg(reg);
+  struct InstrSeq * code;
+  if(num[0]=='\''){
+    char this[10];
+    this[0]=num[1];
+    code = GenInstr(NULL,"la",TmpRegName(reg),this,NULL);
+  }else{
+    char this[10];
+    sprintf(this, "%d", atoi(num));
+    code = GenInstr(NULL,"li",TmpRegName(reg),this,NULL);
+  }
+
+  AppendSeq(code,GenInstr(NULL,"sw",TmpRegName(reg),att->reference,NULL));
+
+  return code;
+
 }
 
 void
@@ -719,6 +774,7 @@ GetFunc(){
 
 struct InstrSeq *
 PutFunc(char * k, enum BaseTypes type){
+  printf("---Putting something somewhere---\n");
   int newReg = AvailTmpReg();
   struct InstrSeq * code;
   if(type==ChrBaseType){

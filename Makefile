@@ -166,7 +166,7 @@ y5test: Y yfactors.src
 	./Y yfactors
 	spim -noexception -file yfactors.asm < yfactors.in
 
-sem2test:	 feature1 feature2 feature3 feature4 feature5 feature6 feature7 feature8
+sem2test:	 feature1 feature2 feature3 feature4 feature5 feature6 feature7 feature8 feature9
 
 feature1:    Y
 						 echo "Testing increment and decrement"
@@ -232,6 +232,15 @@ feature8:	Y
 	cat ycase.lst
 	cat ycase.asm
 	spim -noexception -file ycase.asm
+
+
+feature9:	Y
+	echo "Testing for locals"
+	rm -f ylocal.lst ylocal.asm
+	./Y -l ylocal
+	cat ylocal.lst
+	cat ylocal.asm
+	spim -noexception -file ylocal.asm
 
 
 
