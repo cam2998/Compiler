@@ -1,0 +1,16 @@
+decl main() : int;
+decl second() : int;
+decl x,y : int;
+
+impl main(){
+  x=3;
+  put("hi");
+  second();
+  x=4;
+};
+
+impl second(){
+  y=6;
+  put("hello");
+  return y;
+};

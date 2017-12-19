@@ -7,7 +7,7 @@
 7:      c[y]=y;
 8:      put("Putting ");
 9:      put(y);
-10:      put("at position ");
+10:      put(" at position ");
 11:      put(y);
 12:      put('\n');
 13:    };

@@ -55,6 +55,9 @@
 %type <CondResult> Cases
 %type <Text> IntLit
 %type <Void> Start
+%type <ExprResult> Args
+%type <ExprResult> FuncArgNames
+%type <ExprResult> FuncCall
 
 /* List of token grammar name and corresponding numbers */
 /* y.tab.h will be generated from these for use by scanner*/
@@ -92,6 +95,7 @@
 %token SWITCH_TOK    1001
 %token CASE_TOK      1002
 %token DEF_TOK       1003
+%token RET_TOK       1004
 
 
 
@@ -134,10 +138,14 @@ Type          : CHR_TOK                                                  { $$ = 
 
 Impl          : IMPL_TOK Id FuncArgNames FuncBody ';'                    { ProcFunc($2,$4); };
 
-FuncArgNames  : '('  ')'                                                 {  };
+FuncArgNames  : '('  ')'                                                 { $$ = NULL; };
+FuncArgNames  : '(' Args ')'                                             { $$ = $2; };
 
-FuncBody      : Start FuncStmts RB_TOK                                  { $$ = $2;  DeleteTable(); };
-FuncBody      : LB_TOK  RB_TOK                                          {  };
+Args          : Expr ',' Args                                            { $$ = AppendArgs($1,$3); };
+Args          : Expr                                                     { $$ = $1; };
+
+FuncBody      : Start FuncStmts RB_TOK                                   { $$ = $2;  DeleteTable(); };
+FuncBody      : LB_TOK  RB_TOK                                           {  };
 
 Start         : LB_TOK                                                   { NewTable(); };
 
@@ -156,6 +164,10 @@ Stmt          : IF_TOK '(' CondExpr ')' FuncBody                         { $$ = 
 Stmt          : IncDec                                                   { $$ = $1; };
 Stmt          : FOR_TOK'('Assigns ';' CondExpr ';'IncDecs')'FuncBody     { $$ = MakeFor($3,$5,$7,$9); };
 Stmt          : SWITCH_TOK '(' Expr ')' LB_TOK Cases RB_TOK              { $$ = MakeSwitch($3,$6); };
+Stmt          : FuncCall                                                 { $$ = MakeSeq($1); };
+Stmt          : RET_TOK Expr                                             ( $$ = ReturnVal($2); );
+
+FuncCall      : Id FuncArgNames                                          { $$ = MakeFuncCall($1, $2); };
 
 Cases         : Cases CASE_TOK Expr ':' FuncBody ';'                     { $$ = MakeCase($3,$5,$1); };
 Cases         : Cases DEF_TOK ':' FuncBody ';'                           { $$ = MakeCase(NULL,$4,$1); };
@@ -200,8 +212,9 @@ StringLit     : STRINGLIT_TOK                                            { $$ = 
 ChrLit        : CHRLIT_TOK                                               { $$ = strdup(yytext); };
 IntLit         :INTLIT_TOK                                               { $$ = strdup(yytext); };
 
+AssignStmt    : Id '=' FuncCall                                          { $$ = genStoreWord( $1 , $3); };
 AssignStmt    : Id '=' Expr                                              { $$ = genStoreWord( $1 , $3); };
-AssignStmt    : Id'[' Expr ']' '=' Expr                                { $$ = GenStoreArr( $1 , $6, $3); };
+AssignStmt    : Id'[' Expr ']' '=' Expr                                  { $$ = GenStoreArr( $1 , $6, $3); };
 
 
 Expr          : Expr AddOp Term                                          { $$ = Concatenate($1,$2,$3); };

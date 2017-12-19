@@ -42,6 +42,7 @@ cnst                            { if (!IN_COMMENT) RETURN(CNST_TOK); }
 switch                          { if (!IN_COMMENT) RETURN(SWITCH_TOK); }
 case                            { if (!IN_COMMENT) RETURN(CASE_TOK); }
 default                         { if (!IN_COMMENT) RETURN(DEF_TOK); }
+return                          { if (!IN_COMMENT) RETURN(RET_TOK); }
 
 \'({Letter}|\>|\<|\=|\\{Letter}|{Digit})\'   { if (!IN_COMMENT) RETURN( CHRLIT_TOK ); }
 {Letter}({Letter}|{Digit})*			{ if (!IN_COMMENT) RETURN(IDENT_TOK); }

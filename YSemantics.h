@@ -74,24 +74,38 @@ void                    IncLoop();
 void                    DecLoop();
 struct CondResult *     MakeCase(struct ExprResult* expr, struct InstrSeq * body, struct CondResult * expression);
 struct InstrSeq *       MakeSwitch( struct ExprResult * expr, struct CondResult * cond);
+
 struct InstrSeq *       MakeLoop( struct InstrSeq * breakR);
 struct InstrSeq *       AppendBreak(struct InstrSeq * code);
+
 struct InstrSeq *       MakeFor(struct InstrSeq * assign, struct CondResult * condition ,struct InstrSeq * incdecs, struct InstrSeq * funbody );
+
 struct CondResult *     NegateCond(struct CondResult * expression);
 struct CondResult *     ConcatenateCond(struct CondResult * first, enum IfTypes type, struct CondResult * second);
 struct CondResult *     MakeCond(struct ExprResult * first, enum BaseTypes baseType, struct ExprResult * second);
+
 struct ExprResult *     Concatenate(struct ExprResult * first, enum BaseTypes baseType, struct ExprResult * second);
 struct ExprResult *     createExprResult(char * k, enum BaseTypes baseType);
 struct ExprResult *     loadExprResult(char * k);
 struct InstrSeq *       genStoreWord(char * k, struct ExprResult * expr);
+
 struct ExprResult *     GetFunc();
 struct InstrSeq *       PutFunc(char * k, enum BaseTypes baseType);
+
 struct InstrSeq *       MakeWhile( struct CondResult * cond, struct InstrSeq * body);
 struct InstrSeq *       MakeIf( struct CondResult * cond, struct InstrSeq * body1, enum IfTypes type, struct InstrSeq * body2);
+
 struct InstrSeq *       IncDec(char * k, enum BaseTypes baseType);
+
 struct InstrSeq *       LocDecl(char * k, char * num, enum BaseTypes baseType);
+
 struct InstrSeq *       GenStoreArr(char * k, struct ExprResult * expr, struct ExprResult * ind);
 struct ExprResult *     LoadExprArr(char * k, struct ExprResult * ind);
+
+struct ExprResult *     MakeFuncCall(char * k, struct ExprResult * expr);
+struct InstrSeq *       MakeSeq( struct ExprResult * tthis);
+
+struct ExprResult *     AppendArgs(struct ExprResult * first, struct ExprResult * rest);
 
 void                    Finish();
 

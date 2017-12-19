@@ -88,5 +88,5 @@ _y:			.word			0
 _c:			.word			0,0,0,0,0,0,0,0
 L7:			.asciiz			"]="
 L6:			.asciiz			"c["
-L3:			.asciiz			"at position "
+L3:			.asciiz			" at position "
 L2:			.asciiz			"Putting "

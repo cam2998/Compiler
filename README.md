@@ -11,7 +11,7 @@ This repository contains files to be added to your main project repository to in
 - Step 8, 10 pts
 - Step 9, 10 pts
 - Step 10, 15 pts
-- Step 11, 15 pts, Implement an array data type.
+- Step 11, 15 pts
 - Step 12, 15 pts, Implement function calls for parameterless functions.
 - Step 13, 15 pts, Implement function parameters.
 - Step 14, 20 pts

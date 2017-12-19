@@ -33,7 +33,7 @@ char * BoolOps[] = { "and", "or", "not" };
 int LoopLevel=0;
 int SwitchLevel=0;
 int CaseLevel=0;
-
+int sp=0;
 // corresponds to negation of enum Comparisons
 // enum Comparisons { LtCmp, LteCmp, GtCmp, GteCmp, EqCmp, NeqCmp };
 char * Branches[] = { "bge", "bg", "ble", "bl", "bne", "beq"};
@@ -538,6 +538,63 @@ MakeSwitch( struct ExprResult * expr, struct CondResult * cond){
   ReleaseTmpReg(expr->reg);
   return code;
 }
+
+struct ExprResult *
+AppendArgs(struct ExprResult * first, struct ExprResult * rest){
+  return NULL;
+}
+
+struct InstrSeq *
+MakeSeq( struct ExprResult * tthis){
+   if(!tthis)return NULL;
+   ReleaseTmpReg(tthis->reg);
+   struct InstrSeq * code = tthis->code;
+   free(tthis);
+   return code;
+}
+
+struct ExprResult *
+MakeFuncCall(char * id, struct ExprResult * args ){
+  char * name = malloc(strlen(id) + 3);
+  strcat(name, "_");
+  strcat(name, id);
+  struct SymEntry * idEntry = LookupName(IdentifierTable, name);
+  if(!idEntry)return NULL; //TODO: post message
+  struct Attr * attribute = GetAttr(idEntry);
+  struct InstrSeq * code=GenInstr(NULL,"addi","$sp","$sp","-4");
+  char * ptr=calloc(6,2*sizeof(char));
+  strcat(ptr, Imm(sp));
+  strcat(ptr, "($sp)");
+  sp=sp-4;
+  AppendSeq(code,GenInstr(NULL,"sw","$fp",ptr,NULL));
+  AppendSeq(code,GenInstr(NULL,"move","$fp","$sp",NULL));
+  AppendSeq(code,GenInstr(NULL,"addi","$sp","$sp","-4"));
+  ptr=calloc(6,2*sizeof(char));
+  strcat(ptr, Imm(sp));
+  strcat(ptr, "($fp)");
+  sp=sp-4;
+  AppendSeq(code,GenInstr(NULL,"sw","$ra",ptr,NULL));
+  if(args){
+
+  }
+  AppendSeq(code,GenInstr(NULL,"jal",attribute->reference,NULL,NULL));
+  sp=sp+4;
+  strcat(ptr, Imm(sp));
+  strcat(ptr, "($fp)");
+  AppendSeq(code,GenInstr(NULL,"lw","$ra",ptr,NULL));
+  sp=sp+4;
+  strcat(ptr, Imm(sp));
+  strcat(ptr, "($fp)");
+  AppendSeq(code,GenInstr(NULL,"move","$fp",ptr,NULL));
+  AppendSeq(code,GenInstr(NULL,"addi","$sp","$sp","8"));
+  int reg = AvailTmpReg();
+  AppendSeq(code,GenInstr(NULL,"move",TmpRegName(reg),"$v0",NULL));
+  struct ExprResult * ret = malloc(sizeof(struct ExprResult *));
+  ret->code=code;
+  ret->reg=reg;
+  return ret;
+}
+
 
 void
 ProcFunc(char * id, struct InstrSeq * instrs) {
