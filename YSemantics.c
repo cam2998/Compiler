@@ -590,7 +590,6 @@ struct ExprResult * ret = malloc(sizeof(struct ExprResult *));
   AppendSeq(code,GenInstr(NULL,"addi","$sp","$sp","4"));
   int reg = AvailTmpReg();
   AppendSeq(code,GenInstr(NULL,"move",TmpRegName(reg),"$v0",NULL));
-  printSeq(code);
   ret->code=code;
   ret->reg=reg;
   return ret;

@@ -8,7 +8,7 @@ __start:
 _main:
 			li			$t0, 			6
 			sw			$t0, 			_g
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -16,7 +16,7 @@ _main:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -32,7 +32,7 @@ L2:
 			lw			$t2, 			_k
 			add			$t4, 			$t1, 			$t2
 			sw			$t4, 			_g
-			li			$t1, 			10
+			la			$t1, 			10
 			li			$v0, 			11
 			move			$a0, 			$t1
 			syscall
@@ -42,14 +42,14 @@ L2:
 			syscall
 			b			L2
 L1:
-			li			$t1, 			10
+			la			$t1, 			10
 			li			$v0, 			11
 			move			$a0, 			$t1
 			syscall
 			li			$v0, 			4
 			la			$a0, 			L3
 			syscall
-			li			$t2, 			10
+			la			$t2, 			10
 			li			$v0, 			11
 			move			$a0, 			$t2
 			syscall

@@ -21,7 +21,7 @@ L6:
 			ble			$t0, 			$t1, 			L2
 #:			sgt			$t3, 			$t0, 			$t1
 #:			beqz			$t3, 			L2
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -32,7 +32,7 @@ L6:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -43,14 +43,14 @@ L6:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
 			li			$v0, 			4
 			la			$a0, 			L5
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -63,7 +63,7 @@ L6:
 			b			L6
 L1:
 L2:
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -74,7 +74,7 @@ L2:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -85,14 +85,14 @@ L2:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
 			li			$v0, 			4
 			la			$a0, 			L7
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall

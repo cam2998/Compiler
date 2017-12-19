@@ -48,7 +48,7 @@ B5:
 			sw			$t3, 			_x
 			b			S0
 S0:
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -56,7 +56,7 @@ S0:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall

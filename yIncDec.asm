@@ -12,7 +12,7 @@ _main:
 			sw			$t0, 			_x
 			li			$t0, 			2
 			sw			$t0, 			_y
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -30,7 +30,7 @@ _main:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -48,7 +48,7 @@ _main:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -66,7 +66,7 @@ _main:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -84,7 +84,7 @@ _main:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall

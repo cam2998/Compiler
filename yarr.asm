@@ -34,7 +34,7 @@ L4:
 			li			$v0, 			1
 			move			$a0, 			$t1
 			syscall
-			li			$t1, 			10
+			la			$t1, 			10
 			li			$v0, 			11
 			move			$a0, 			$t1
 			syscall
@@ -72,7 +72,7 @@ L8:
 			li			$v0, 			1
 			move			$a0, 			$t3
 			syscall
-			li			$t3, 			10
+			la			$t3, 			10
 			li			$v0, 			11
 			move			$a0, 			$t3
 			syscall

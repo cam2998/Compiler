@@ -14,7 +14,7 @@ L4:
 			bge			$t0, 			$t1, 			L1
 #:			slt			$t2, 			$t0, 			$t1
 #:			beqz			$t2, 			L1
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -25,14 +25,14 @@ L4:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
 			li			$v0, 			4
 			la			$a0, 			L3
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -41,7 +41,7 @@ L4:
 			sw			$t0, 			_x
 			b			L4
 L1:
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
@@ -52,14 +52,14 @@ L1:
 			li			$v0, 			1
 			move			$a0, 			$t0
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall
 			li			$v0, 			4
 			la			$a0, 			L5
 			syscall
-			li			$t0, 			10
+			la			$t0, 			10
 			li			$v0, 			11
 			move			$a0, 			$t0
 			syscall

@@ -79,8 +79,7 @@ extern int yydebug;
     SWITCH_TOK = 1001,
     CASE_TOK = 1002,
     DEF_TOK = 1003,
-    RET_TOK = 1004,
-    CALL_TOK = 1005
+    RET_TOK = 1004
   };
 #endif
 /* Tokens.  */
@@ -119,7 +118,6 @@ extern int yydebug;
 #define CASE_TOK 1002
 #define DEF_TOK 1003
 #define RET_TOK 1004
-#define CALL_TOK 1005
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -136,7 +134,7 @@ union YYSTYPE
   struct ExprResult * ExprResult;
   struct CondResult * CondResult;
 
-#line 140 "y.tab.h" /* yacc.c:1909  */
+#line 138 "y.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

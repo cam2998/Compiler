@@ -55,7 +55,6 @@
 %type <CondResult> Cases
 %type <Text> IntLit
 %type <Void> Start
-%type <ExprResult> Args
 %type <ExprResult> FuncArgNames
 %type <ExprResult> FuncCall
 %type <ExprResult> FunAssign
@@ -97,7 +96,6 @@
 %token CASE_TOK      1002
 %token DEF_TOK       1003
 %token RET_TOK       1004
-%token CALL_TOK      1005
 
 
 
@@ -130,10 +128,10 @@ DeclList      : DeclItem                                                 { $$ = 
 
 DeclItem      : Id                                                       { $$ = ProcName($1,PrimType,NULL,0); };
 DeclItem      : Id '[' IntLit ']'                                        { $$ = ProcName($1,PrimType,$3,1); };
-DeclItem      : Id FuncArgTypes                                          { $$ = ProcName($1,FuncType,NULL,0); };
+DeclItem      : Id FuncArgTypes                                          { $$ = ProcName($1,FuncType,NULL,2); };
 
 Id            : IDENT_TOK                                                { $$ = strdup(yytext); };
-FuncArgTypes  : '('  ')'                                                 {  };
+FuncArgTypes  : '(' ')'                                            {  };
 
 Type          : INT_TOK                                                  { $$ = IntBaseType; };
 Type          : CHR_TOK                                                  { $$ = ChrBaseType; };
@@ -141,10 +139,7 @@ Type          : CHR_TOK                                                  { $$ = 
 Impl          : IMPL_TOK Id FuncArgNames FuncBody ';'                    { ProcFunc($2,$4); };
 
 FuncArgNames  : '('  ')'                                                 { $$ = NULL; };
-FuncArgNames  : '(' Args ')'                                             { $$ = $2; };
 
-Args          : Expr ',' Args                                            { $$ = AppendArgs($1,$3); };
-Args          : Expr                                                     { $$ = $1; };
 
 FuncBody      : Start FuncStmts RB_TOK                                   { $$ = $2;  DeleteTable(); };
 FuncBody      : LB_TOK  RB_TOK                                           {  };
