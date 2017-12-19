@@ -69,6 +69,9 @@ default                         { if (!IN_COMMENT) RETURN(DEF_TOK); }
 \)                              { if (!IN_COMMENT) RETURN(')'); }
 \:                              { if (!IN_COMMENT) RETURN(':'); }
 \,                              { if (!IN_COMMENT) RETURN(','); }
+\[                              { if (!IN_COMMENT) RETURN('['); }
+\]                              { if (!IN_COMMENT) RETURN(']'); }
+
 
 \/\*														{ nestLevel=1; }
 \*\/														{ nestLevel=0; }

@@ -166,23 +166,23 @@ y5test: Y yfactors.src
 	./Y yfactors
 	spim -noexception -file yfactors.asm < yfactors.in
 
-sem2test:	 feature1 feature2 feature3 feature4 feature5 feature6 feature7 feature8 feature9
+sem2test:	 feature1 feature2 feature3 feature4 feature5 feature6 feature7 feature8 feature9 feature10
 
 feature1:    Y
-						 echo "Testing increment and decrement"
-						 rm -f yIncDec.lst yIncDec.asm
-						 ./Y -l yIncDec
-						 cat yIncDec.lst
-						 cat yIncDec.asm
-						 spim -noexception -file yIncDec.asm < yIncDec.in
+	 echo "Testing increment and decrement"
+	 rm -f yIncDec.lst yIncDec.asm
+	 ./Y -l yIncDec
+	 cat yIncDec.lst
+	 cat yIncDec.asm
+	 spim -noexception -file yIncDec.asm < yIncDec.in
 
 feature2:    Y
-							echo "Testing boolean operators"
-							rm -f ymybool.lst ymybool.asm
-			 				 ./Y -l ymybool
-						 	 cat ymybool.lst
-						 	 cat ymybool.asm
-						 	 spim -noexception -file ymybool.asm
+		echo "Testing boolean operators"
+		rm -f ymybool.lst ymybool.asm
+	 	./Y -l ymybool
+	 	cat ymybool.lst
+	 	cat ymybool.asm
+	 	spim -noexception -file ymybool.asm
 
 feature3:    Y
 	echo "Testing basic for loop"
@@ -193,12 +193,12 @@ feature3:    Y
 	spim -noexception -file yfor.asm
 
 feature4:    Y
-		echo "Testing for with multiple fields in each part operators"
-		rm -f yfor++.lst yfor++.asm
-		./Y -l yfor++
-		cat yfor++.lst
-		cat yfor++.asm
-		spim -noexception -file yfor++.asm
+	echo "Testing for with multiple fields in each part operators"
+	rm -f yfor++.lst yfor++.asm
+	./Y -l yfor++
+	cat yfor++.lst
+	cat yfor++.asm
+	spim -noexception -file yfor++.asm
 
 feature5:	Y
 	echo "Testing for loop/break"
@@ -241,6 +241,15 @@ feature9:	Y
 	cat ylocal.lst
 	cat ylocal.asm
 	spim -noexception -file ylocal.asm
+
+
+feature10:	Y
+	echo "Testing arrays"
+	rm -f yarr.lst yarr.asm
+	./Y -l yarr
+	cat yarr.lst
+	cat yarr.asm
+	spim -noexception -file yarr.asm
 
 
 

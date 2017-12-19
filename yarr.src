@@ -1,0 +1,24 @@
+decl main() : int;
+decl c[8] : int;
+decl x,y : int;
+
+impl main() {
+  for(y=0;y<8;y++){
+    c[y]=y;
+    put("Putting ");
+    put(y);
+    put(" at position ");
+    put(y);
+    put('\n');
+  };
+
+  for(y=0;y<8;y++){
+    put("c[");
+    put(y);
+    put("]=");
+    x=c[y];
+    put(x);
+    put('\n');
+  };
+
+};

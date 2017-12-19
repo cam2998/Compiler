@@ -21,13 +21,14 @@ struct FuncDesc {
   struct InstrSeq * funcCode;
 };
 
-enum DeclTypes { PrimType, FuncType, CnstType};
+enum DeclTypes { PrimType, FuncType, CnstType, ArrType};
 struct TypeDesc {
   enum DeclTypes declType;
   union {
     enum BaseTypes primDesc;
     struct FuncDesc * funcDesc;
   };
+  int size;
 };
 
 struct CondResult {
@@ -88,10 +89,13 @@ struct InstrSeq *       PutFunc(char * k, enum BaseTypes baseType);
 struct InstrSeq *       MakeWhile( struct CondResult * cond, struct InstrSeq * body);
 struct InstrSeq *       MakeIf( struct CondResult * cond, struct InstrSeq * body1, enum IfTypes type, struct InstrSeq * body2);
 struct InstrSeq *       IncDec(char * k, enum BaseTypes baseType);
+struct InstrSeq *       LocDecl(char * k, char * num, enum BaseTypes baseType);
+struct InstrSeq *       GenStoreArr(char * k, struct ExprResult * expr, struct ExprResult * ind);
+struct ExprResult *     LoadExprArr(char * k, struct ExprResult * ind);
 
 void                    Finish();
 
 void                    ProcDecls(struct IdList * idList, enum BaseTypes baseType, char * num);
 struct IdList *         AppendIdList(struct IdList * item, struct IdList * list);
-struct IdList *         ProcName(char * id, enum DeclTypes type);
+struct IdList *         ProcName(char * id, enum DeclTypes type, char * n,int m);
 void                    ProcFunc(char * id, struct InstrSeq * instrs);

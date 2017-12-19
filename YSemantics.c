@@ -238,7 +238,12 @@ Finish() {
         }
         if(kind==INT_KIND||kind==CNST_KIND){
           char * c = strdup(headAttr->reference);
-          AppendSeq(dataCode,GenInstr(c,".word","0",NULL,NULL));
+          int n=headAttr->typeDesc->size;
+          char * zeros=calloc(1+2*n,2*sizeof(char));
+          strcat(zeros, "0");
+          int k;
+          for(k=1;k<n;k++)strcat(zeros, ",0");
+          AppendSeq(dataCode,GenInstr(c,".word",zeros,NULL,NULL));
         }
         head=head->next;
       }
@@ -294,11 +299,69 @@ LocDecl(char * k, char * num, enum BaseTypes baseType){
     sprintf(this, "%d", atoi(num));
     code = GenInstr(NULL,"li",TmpRegName(reg),this,NULL);
   }
-
   AppendSeq(code,GenInstr(NULL,"sw",TmpRegName(reg),att->reference,NULL));
-
   return code;
+}
 
+
+struct InstrSeq *
+GenStoreArr(char * k, struct ExprResult * expr, struct ExprResult * ind){
+  struct SymEntry * idEntry = LookupName(IdentifierTable, k);
+  if(!idEntry)return NULL; //TODO: post message
+  struct Attr * attribute = GetAttr(idEntry);
+  if(attribute->typeDesc->declType==FuncType)return NULL; //TODO: Post message
+  if(attribute->typeDesc->primDesc!=expr->baseType)return NULL;//TODO: Post message
+  int reg=AvailTmpReg();
+  char * name=malloc((strlen(k)+3)*sizeof(char));
+  strcat(name,"_");
+  strcat(name,k);
+  char * reggg = calloc(7,sizeof(char));
+  strcat(reggg,"(");
+  strcat(reggg,TmpRegName(reg));
+  strcat(reggg,")");
+  struct InstrSeq * code=expr->code;
+  int temp=AvailTmpReg();
+  AppendSeq(code,GenInstr(NULL,"addi",TmpRegName(temp),"$zero","4"));
+  AppendSeq(code,GenInstr(NULL,"mul",TmpRegName(ind->reg),TmpRegName(ind->reg),TmpRegName(temp)));
+  ReleaseTmpReg(temp);
+  AppendSeq(code,GenInstr(NULL,"la",TmpRegName(reg),name,NULL));
+  if(ind>0)AppendSeq(code,GenInstr(NULL,"add",TmpRegName(reg),TmpRegName(reg),TmpRegName(ind->reg)));
+  AppendSeq(code,GenInstr(NULL,"sw",TmpRegName(expr->reg),reggg,NULL));
+  ReleaseTmpReg(expr->reg);
+  ReleaseTmpReg(reg);
+  free(expr);
+  //free regs and expr?
+  return code;
+}
+struct ExprResult *
+LoadExprArr(char * k, struct ExprResult * ind){
+  struct SymEntry * idEntry = LookupName(IdentifierTable, k);
+  if(!idEntry)return NULL; //TODO: post message
+  struct Attr * attribute = GetAttr(idEntry);
+  struct ExprResult * ret = malloc(sizeof(struct ExprResult *));
+  int newReg = AvailTmpReg();
+  int reg=AvailTmpReg();
+  char * reggg = calloc(7,sizeof(char));
+  strcat(reggg,"(");
+  strcat(reggg,TmpRegName(reg));
+  strcat(reggg,")");
+  char * name=malloc((strlen(k)+3)*sizeof(char));
+  strcat(name,"_");
+  strcat(name,k);
+  struct InstrSeq * code=ind->code;
+  int temp=AvailTmpReg();
+  AppendSeq(code,GenInstr(NULL,"addi",TmpRegName(temp),"$zero","4"));
+  AppendSeq(code,GenInstr(NULL,"mul",TmpRegName(ind->reg),TmpRegName(ind->reg),TmpRegName(temp)));
+  ReleaseTmpReg(temp);
+  AppendSeq(code,GenInstr(NULL,"la",TmpRegName(reg),name,NULL));
+  if(ind>0)AppendSeq(code,GenInstr(NULL,"add",TmpRegName(reg),TmpRegName(reg),TmpRegName(ind->reg)));
+  AppendSeq(code,GenInstr(NULL,"lw",TmpRegName(newReg),reggg,NULL));
+  ret->code=code;
+  ret->reg=newReg;
+  if(attribute->typeDesc->declType==FuncType)return NULL; //TODO: Post message
+  ret->baseType=attribute->typeDesc->primDesc;
+  ReleaseTmpReg(reg);
+  return ret;
 }
 
 void
@@ -313,6 +376,7 @@ ProcDecls(struct IdList * idList, enum BaseTypes baseType, char * num) {
           struct TypeDesc *desc = MakePrimDesc(baseType);
           struct Attr * att=malloc(sizeof(struct Attr *));
           att = (struct Attr *) GetAttr(idList->entry);
+          desc->size=att->typeDesc->size;
           char *ref = malloc(strlen(idList->entry->name) + 3);
           strcat(ref, "_");
           strcat(ref, idList->entry->name);
@@ -329,7 +393,6 @@ ProcDecls(struct IdList * idList, enum BaseTypes baseType, char * num) {
           att->reference=strdup(ref);
           int reg=AvailTmpReg();
           char this[10];
-          sprintf(this, "%d", atoi(num));
           desc->funcDesc->funcCode=AppendSeq(GenInstr(NULL,"li",TmpRegName(reg),this,NULL),GenInstr(NULL,"sw",TmpRegName(reg),ref,NULL));
           att->typeDesc=desc;
           SetAttr(idList->entry, CNST_KIND , att);
@@ -365,7 +428,7 @@ GenSwitchLabel(){
 }
 
 struct IdList *
-ProcName(char * id, enum DeclTypes type) {
+ProcName(char * id, enum DeclTypes type, char * n, int m) {
   // get entry for id, error if it exists
   if(LookupName(IdentifierTable,id))return NULL;//do post message
   // enter id
@@ -378,9 +441,14 @@ ProcName(char * id, enum DeclTypes type) {
   if(type==PrimType)typeD=MakePrimDesc(-1);
   if(type==FuncType)typeD=MakeFuncDesc(-1);
   if(type==CnstType)typeD=MakePrimDesc(-1);
+  if(type==ArrType)typeD=MakePrimDesc(-1);
+
   // create, init and set attr struct
   struct Attr * attribute=malloc(sizeof(struct Attr));
   attribute->typeDesc=typeD;
+
+  char * label = (char *) malloc(8);
+  if(m==1)attribute->typeDesc->size=atoi(n);
   SetAttr(node->entry, type , attribute);
   return node;
 }
@@ -774,7 +842,6 @@ GetFunc(){
 
 struct InstrSeq *
 PutFunc(char * k, enum BaseTypes type){
-  printf("---Putting something somewhere---\n");
   int newReg = AvailTmpReg();
   struct InstrSeq * code;
   if(type==ChrBaseType){

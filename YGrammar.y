@@ -115,15 +115,16 @@ Value         : INTLIT_TOK                                               { $$ = 
 CnstList      : CnstItem ',' CnstList                                    { $$ = AppendIdList($1,$3); };
 CnstList      : CnstItem                                                 { $$ = $1; };
 
-CnstItem      : Id                                                       { $$ = ProcName($1,CnstType); };
+CnstItem      : Id                                                       { $$ = ProcName($1,CnstType,NULL,0); };
 
 Decl          : DECL_TOK DeclList ':' Type ';'                           { ProcDecls($2,$4,0); };
 
 DeclList      : DeclItem ',' DeclList                                    { $$ = AppendIdList($1,$3); };
 DeclList      : DeclItem                                                 { $$ = $1; };
 
-DeclItem      : Id                                                       { $$ = ProcName($1,PrimType); };
-DeclItem      : Id FuncArgTypes                                          { $$ = ProcName($1,FuncType); };
+DeclItem      : Id                                                       { $$ = ProcName($1,PrimType,NULL,0); };
+DeclItem      : Id '[' IntLit ']'                                        { $$ = ProcName($1,PrimType,$3,1); };
+DeclItem      : Id FuncArgTypes                                          { $$ = ProcName($1,FuncType,NULL,0); };
 
 Id            : IDENT_TOK                                                { $$ = strdup(yytext); };
 FuncArgTypes  : '('  ')'                                                 {  };
@@ -200,6 +201,8 @@ ChrLit        : CHRLIT_TOK                                               { $$ = 
 IntLit         :INTLIT_TOK                                               { $$ = strdup(yytext); };
 
 AssignStmt    : Id '=' Expr                                              { $$ = genStoreWord( $1 , $3); };
+AssignStmt    : Id'[' Expr ']' '=' Expr                                { $$ = GenStoreArr( $1 , $6, $3); };
+
 
 Expr          : Expr AddOp Term                                          { $$ = Concatenate($1,$2,$3); };
 Expr          : Term                                                     { $$ = $1; };
@@ -212,6 +215,8 @@ Term          : Factor                                                   { $$ = 
 Factor        : '(' Expr ')'                                             { $$ = $2; };
 Factor        : MINUS_TOK Expr                                           {  };
 Factor        : Id                                                       { $$ = loadExprResult( $1 ); };
+Factor        : Id '[' Expr ']'                                        { $$ = LoadExprArr( $1, $3); };
+
 Factor        : INTLIT_TOK                                               { $$ = createExprResult( strdup( yytext ),
                                                                           IntBaseType); };
 Factor        : GetF                                                     { $$ = $1; };

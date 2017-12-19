@@ -1,0 +1,26 @@
+1:  decl main() : int;
+2:  decl c[8] : int;
+3:  decl x,y : int;
+4:  
+5:  impl main() {
+6:    for(y=0;y<8;y++){
+7:      c[y]=y;
+8:      put("Putting ");
+9:      put(y);
+10:      put("at position ");
+11:      put(y);
+12:      put('\n');
+13:    };
+14:  
+15:    for(y=0;y<8;y++){
+16:      put("c[");
+17:      put(y);
+18:      put("]=");
+19:      x=c[y];
+20:      put(x);
+21:      put('\n');
+22:    };
+23:  
+24:  };
+0:      
+    -A Parse Successful

@@ -1,7 +1,7 @@
 			.text
 			.globl			__start
 __start:
-			li			$t0, 			100
+			li			$t0, 			
 			sw			$t0, 			_this
 			jal			_main
 			li			$v0, 			10

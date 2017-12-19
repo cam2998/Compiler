@@ -1,7 +1,7 @@
 # CS 442 - Compiler Construction
 ## Semantics Part 2
 
-This repository contains files to be addded to your main project repository to include the semantic processing capabilities to compile programs of the language Y.
+This repository contains files to be added to your main project repository to include the semantic processing capabilities to compile programs of the language Y.
 
 ## The Assignment
 
@@ -14,7 +14,7 @@ This repository contains files to be addded to your main project repository to i
 - Step 11, 15 pts, Implement an array data type.
 - Step 12, 15 pts, Implement function calls for parameterless functions.
 - Step 13, 15 pts, Implement function parameters.
-- Step 14, 20 pts, Implement local variables in functions.
+- Step 14, 20 pts
 
 The repository contains a selection of test programs that implement various combinations of these features. You can make your own test programs but they should actually do something.
 
