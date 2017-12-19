@@ -392,8 +392,13 @@ ProcDecls(struct IdList * idList, enum BaseTypes baseType, char * num) {
           strcat(ref, idList->entry->name);
           att->reference=strdup(ref);
           int reg=AvailTmpReg();
-          char this[10];
-          desc->funcDesc->funcCode=AppendSeq(GenInstr(NULL,"li",TmpRegName(reg),this,NULL),GenInstr(NULL,"sw",TmpRegName(reg),ref,NULL));
+          if(num[0]=='\''){
+            char this[4];
+            this[0]=num[1];
+            desc->funcDesc->funcCode=AppendSeq(GenInstr(NULL,"la",TmpRegName(reg),this,NULL),GenInstr(NULL,"sw",TmpRegName(reg),ref,NULL));
+          }else{
+            desc->funcDesc->funcCode=AppendSeq(GenInstr(NULL,"li",TmpRegName(reg),Imm(atoi(num)),NULL),GenInstr(NULL,"sw",TmpRegName(reg),ref,NULL));
+          }
           att->typeDesc=desc;
           SetAttr(idList->entry, CNST_KIND , att);
         } else {
@@ -553,43 +558,39 @@ MakeSeq( struct ExprResult * tthis){
    return code;
 }
 
+struct InstrSeq *
+ReturnVal(struct ExprResult * ret){
+  struct InstrSeq * code = ret->code;
+  AppendSeq(code, GenInstr(NULL,"move","$v0", TmpRegName(ret->reg), NULL));
+  AppendSeq(code, GenInstr(NULL,"jr", "$ra", NULL, NULL));
+  return code;
+}
+
 struct ExprResult *
 MakeFuncCall(char * id, struct ExprResult * args ){
+struct ExprResult * ret = malloc(sizeof(struct ExprResult *));
   char * name = malloc(strlen(id) + 3);
   strcat(name, "_");
   strcat(name, id);
-  struct SymEntry * idEntry = LookupName(IdentifierTable, name);
-  if(!idEntry)return NULL; //TODO: post message
-  struct Attr * attribute = GetAttr(idEntry);
   struct InstrSeq * code=GenInstr(NULL,"addi","$sp","$sp","-4");
   char * ptr=calloc(6,2*sizeof(char));
   strcat(ptr, Imm(sp));
   strcat(ptr, "($sp)");
   sp=sp-4;
-  AppendSeq(code,GenInstr(NULL,"sw","$fp",ptr,NULL));
-  AppendSeq(code,GenInstr(NULL,"move","$fp","$sp",NULL));
-  AppendSeq(code,GenInstr(NULL,"addi","$sp","$sp","-4"));
-  ptr=calloc(6,2*sizeof(char));
-  strcat(ptr, Imm(sp));
-  strcat(ptr, "($fp)");
-  sp=sp-4;
   AppendSeq(code,GenInstr(NULL,"sw","$ra",ptr,NULL));
   if(args){
 
   }
-  AppendSeq(code,GenInstr(NULL,"jal",attribute->reference,NULL,NULL));
+  ptr=calloc(6,2*sizeof(char));
+  AppendSeq(code,GenInstr(NULL,"jal",name,NULL,NULL));
   sp=sp+4;
   strcat(ptr, Imm(sp));
-  strcat(ptr, "($fp)");
+  strcat(ptr, "($sp)");
   AppendSeq(code,GenInstr(NULL,"lw","$ra",ptr,NULL));
-  sp=sp+4;
-  strcat(ptr, Imm(sp));
-  strcat(ptr, "($fp)");
-  AppendSeq(code,GenInstr(NULL,"move","$fp",ptr,NULL));
-  AppendSeq(code,GenInstr(NULL,"addi","$sp","$sp","8"));
+  AppendSeq(code,GenInstr(NULL,"addi","$sp","$sp","4"));
   int reg = AvailTmpReg();
   AppendSeq(code,GenInstr(NULL,"move",TmpRegName(reg),"$v0",NULL));
-  struct ExprResult * ret = malloc(sizeof(struct ExprResult *));
+  printSeq(code);
   ret->code=code;
   ret->reg=reg;
   return ret;
@@ -874,7 +875,8 @@ genStoreWord(char * k, struct ExprResult * expr){
   if(!idEntry)return NULL; //TODO: post message
   struct Attr * attribute = GetAttr(idEntry);
   if(attribute->typeDesc->declType==FuncType)return NULL; //TODO: Post message
-  if(attribute->typeDesc->primDesc!=expr->baseType)return NULL;//TODO: Post message
+  //if(attribute->typeDesc->primDesc!=expr->baseType)return NULL;//TODO: Post message
+  //dif(!expr)return NULL;
   struct InstrSeq * code=expr->code;
   AppendSeq(code,GenInstr(NULL,"sw",TmpRegName(expr->reg),attribute->reference,NULL));
   ReleaseTmpReg(expr->reg);
@@ -908,7 +910,7 @@ PutFunc(char * k, enum BaseTypes type){
     if(c == '\\' && k[2]=='t')i=11;
     char this[10];
     sprintf(this, "%d", i);
-    code=GenInstr(NULL,"li",TmpRegName(newReg),this,NULL);
+    code=GenInstr(NULL,"la",TmpRegName(newReg),this,NULL);
     AppendSeq(code,GenInstr(NULL,"li","$v0","11",NULL));
     AppendSeq(code,GenInstr(NULL,"move","$a0",TmpRegName(newReg),NULL));
     AppendSeq(code,GenInstr(NULL,"syscall",NULL,NULL,NULL));

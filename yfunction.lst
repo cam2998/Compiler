@@ -4,14 +4,16 @@
 4:  
 5:  impl main(){
 6:    x=3;
-7:    put("hi");
-8:    second();
-9:    x=4;
-10:  };
-11:  
-12:  impl second(){
-13:    y=6;
-14:    put("hello");
-15:  };
+7:    put("x=3 before call\n");
+8:    x = second();
+9:    put("should now be x=6\n x=");
+10:    put(x);
+11:    put('\n');
+12:  };
+13:  
+14:  impl second(){
+15:    y=6;
+16:    return y;
+17:  };
 0:      
     -A Parse Successful

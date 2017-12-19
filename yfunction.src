@@ -4,13 +4,14 @@ decl x,y : int;
 
 impl main(){
   x=3;
-  put("hi");
-  second();
-  x=4;
+  put("x=3 before call\n");
+  x = second();
+  put("should now be x=6\n x=");
+  put(x);
+  put('\n');
 };
 
 impl second(){
   y=6;
-  put("hello");
   return y;
 };

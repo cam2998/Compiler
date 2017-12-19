@@ -105,6 +105,8 @@ struct ExprResult *     LoadExprArr(char * k, struct ExprResult * ind);
 struct ExprResult *     MakeFuncCall(char * k, struct ExprResult * expr);
 struct InstrSeq *       MakeSeq( struct ExprResult * tthis);
 
+struct InstrSeq *       ReturnVal(struct ExprResult * ret);
+
 struct ExprResult *     AppendArgs(struct ExprResult * first, struct ExprResult * rest);
 
 void                    Finish();

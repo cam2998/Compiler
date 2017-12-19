@@ -43,6 +43,7 @@ switch                          { if (!IN_COMMENT) RETURN(SWITCH_TOK); }
 case                            { if (!IN_COMMENT) RETURN(CASE_TOK); }
 default                         { if (!IN_COMMENT) RETURN(DEF_TOK); }
 return                          { if (!IN_COMMENT) RETURN(RET_TOK); }
+call                            { if (!IN_COMMENT) RETURN(CALL_TOK); }
 
 \'({Letter}|\>|\<|\=|\\{Letter}|{Digit})\'   { if (!IN_COMMENT) RETURN( CHRLIT_TOK ); }
 {Letter}({Letter}|{Digit})*			{ if (!IN_COMMENT) RETURN(IDENT_TOK); }

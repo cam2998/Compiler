@@ -1,7 +1,7 @@
 			.text
 			.globl			__start
 __start:
-			li			$t0, 			
+			li			$t0, 			100
 			sw			$t0, 			_this
 			jal			_main
 			li			$v0, 			10
@@ -15,7 +15,7 @@ _main:
 			li			$v0, 			1
 			move			$a0, 			$t1
 			syscall
-			li			$t1, 			10
+			la			$t1, 			10
 			li			$v0, 			11
 			move			$a0, 			$t1
 			syscall
@@ -26,7 +26,7 @@ _main:
 			li			$v0, 			1
 			move			$a0, 			$t2
 			syscall
-			li			$t2, 			10
+			la			$t2, 			10
 			li			$v0, 			11
 			move			$a0, 			$t2
 			syscall

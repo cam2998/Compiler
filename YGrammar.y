@@ -58,6 +58,7 @@
 %type <ExprResult> Args
 %type <ExprResult> FuncArgNames
 %type <ExprResult> FuncCall
+%type <ExprResult> FunAssign
 
 /* List of token grammar name and corresponding numbers */
 /* y.tab.h will be generated from these for use by scanner*/
@@ -96,6 +97,7 @@
 %token CASE_TOK      1002
 %token DEF_TOK       1003
 %token RET_TOK       1004
+%token CALL_TOK      1005
 
 
 
@@ -153,6 +155,7 @@ FuncStmts     : Stmt ';' FuncStmts                                       { $$ = 
 FuncStmts     : BREAK_TOK ';' FuncStmts                                  { $$ = AppendBreak($3); };
 FuncStmts     :                                                          {  $$ = NULL; };
 
+Stmt          : Id FunAssign                                             { $$ = genStoreWord( $1 , $2); };
 Stmt          : Id ':' ChrLit                                            { $$ = LocDecl($1,$3,ChrBaseType); };
 Stmt          : Id ':' IntLit                                            { $$ = LocDecl($1,$3,IntBaseType); };
 Stmt          : LOOP_TOK Loop                                            { IncLoop(); $$=$2;};
@@ -165,7 +168,9 @@ Stmt          : IncDec                                                   { $$ = 
 Stmt          : FOR_TOK'('Assigns ';' CondExpr ';'IncDecs')'FuncBody     { $$ = MakeFor($3,$5,$7,$9); };
 Stmt          : SWITCH_TOK '(' Expr ')' LB_TOK Cases RB_TOK              { $$ = MakeSwitch($3,$6); };
 Stmt          : FuncCall                                                 { $$ = MakeSeq($1); };
-Stmt          : RET_TOK Expr                                             ( $$ = ReturnVal($2); );
+Stmt          : RET_TOK Expr                                             { $$ = ReturnVal($2); };
+
+FunAssign     : '=' FuncCall                                             { $$ = $2; };
 
 FuncCall      : Id FuncArgNames                                          { $$ = MakeFuncCall($1, $2); };
 
@@ -212,7 +217,6 @@ StringLit     : STRINGLIT_TOK                                            { $$ = 
 ChrLit        : CHRLIT_TOK                                               { $$ = strdup(yytext); };
 IntLit         :INTLIT_TOK                                               { $$ = strdup(yytext); };
 
-AssignStmt    : Id '=' FuncCall                                          { $$ = genStoreWord( $1 , $3); };
 AssignStmt    : Id '=' Expr                                              { $$ = genStoreWord( $1 , $3); };
 AssignStmt    : Id'[' Expr ']' '=' Expr                                  { $$ = GenStoreArr( $1 , $6, $3); };
 
@@ -228,7 +232,7 @@ Term          : Factor                                                   { $$ = 
 Factor        : '(' Expr ')'                                             { $$ = $2; };
 Factor        : MINUS_TOK Expr                                           {  };
 Factor        : Id                                                       { $$ = loadExprResult( $1 ); };
-Factor        : Id '[' Expr ']'                                        { $$ = LoadExprArr( $1, $3); };
+Factor        : Id '[' Expr ']'                                          { $$ = LoadExprArr( $1, $3); };
 
 Factor        : INTLIT_TOK                                               { $$ = createExprResult( strdup( yytext ),
                                                                           IntBaseType); };
