@@ -1,4 +1,13 @@
 # CS 442 - Compiler Construction
+
+This is a compiler that I slowly created with guidance and assistance from the proffessor. The compiler is fully functioning with many functionalities of regular compilers such as constants, function creation, function calls, and declarables. One of the major functionalities that was not implemented was functions and function calls with parameters. Which can be worked around with less efficiency by using global variables.
+
+Note: This last assignment is out of 60pts any additional pts are extra credit.
+
+Current Points: 110 
+60/60
+50/0 extra creadit
+
 ## Semantics Part 2
 
 This repository contains files to be added to your main project repository to include the semantic processing capabilities to compile programs of the language Y.
@@ -12,7 +21,7 @@ This repository contains files to be added to your main project repository to in
 - Step 9, 10 pts
 - Step 10, 15 pts
 - Step 11, 15 pts
-- Step 12, 15 pts, Implement function calls for parameterless functions.
+- Step 12, 15 pts, Implement function calls for parameterless functions. (Done)
 - Step 13, 15 pts, Implement function parameters.
 - Step 14, 20 pts
 
